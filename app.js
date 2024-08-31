@@ -16,7 +16,7 @@ app.use(express.json());
 
 // Define routes
 app.use('/users/signup', signup);
-app.use("users/login", login);
+app.use("/users/login", login);
 
 app.get('/', (req, res) => {
   res.send('Hello World!');
