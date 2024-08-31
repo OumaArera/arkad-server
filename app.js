@@ -1,6 +1,7 @@
 const express = require('express');
 const db = require('./models');
 const signup = require("./authentication/signup");
+const login = require("./authentication/login");
 const cors = require('cors'); 
 require('dotenv').config();
 
@@ -15,9 +16,7 @@ app.use(express.json());
 
 // Define routes
 app.use('/users/signup', signup);
-
-
-
+app.use("users/login", login);
 
 app.get('/', (req, res) => {
   res.send('Hello World!');

@@ -3,7 +3,6 @@ const db = require('../models');
 const bcrypt = require('bcrypt');
 const CryptoJS = require('crypto-js');
 const nodemailer = require('nodemailer');
-const { where } = require('sequelize');
 require('dotenv').config();
 
 const router = express.Router();
@@ -94,16 +93,6 @@ router.post('/', async (req, res) => {
         success: false,
         message: 'Invalid email format',
         statusCode: 400,
-      });
-    }
-
-    // Check if the username already exists
-    const existingUser = await db.User.findOne({ where: { username } });
-    if (existingUser) {
-      return res.status(409).json({
-        success: false,
-        message: 'Username already exists',
-        statusCode: 409,
       });
     }
 
