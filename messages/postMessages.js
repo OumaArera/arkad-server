@@ -37,10 +37,10 @@ router.post('/', async (req, res) => {
     decryptedData = decryptedData.replace(/\0+$/, '');
 
     const userData = JSON.parse(decryptedData);
+    Object.entries(userData).forEach(([key, value]) => console.log(`${key} : ${value}`));
     const { fullName, email, phoneNumber, message } = userData;
 
-    if (!fullName || !email || !phoneNumber || !message ||
-        !isString(fullName) || !isString(email) || !isString(phoneNumber) || !isString(message)) {
+    if (!fullName || !email || !phoneNumber || !message) {
       return res.status(400).json({
         success: false,
         message: 'Missing or invalid required fields',
