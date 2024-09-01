@@ -1,6 +1,7 @@
 const express = require('express');
 const db = require('../models');
 const CryptoJS = require('crypto-js');
+const authenticateToken = require("../authentication/authenticateToken");
 require('dotenv').config();
 
 const router = express.Router();
@@ -19,7 +20,7 @@ const encryptData = (data, key) => {
   };
 };
 
-router.get('/', async (req, res) => {
+router.get('/', authenticateToken, async (req, res) => {
   try {
     const unreadMessages = await db.Message.findAll({
       where: { status: 'unread' },
