@@ -55,8 +55,9 @@ router.post('/', async (req, res) => {
         statusCode: 400,
       });
     };
+    const status ="unread";
 
-    await db.Message.create({ fullName, email, phoneNumber, message });
+    await db.Message.create({ fullName, email, phoneNumber, message, status });
 
     return res.status(201).json({
       message: 'Message sent successfully',
