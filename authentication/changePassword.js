@@ -7,7 +7,7 @@ require('dotenv').config();
 
 const router = express.Router();
 
-router.post('/', authenticateToken, async (req, res) => {
+router.put('/', authenticateToken, async (req, res) => {
   const { iv, ciphertext } = req.body;
 
   if (!iv || !ciphertext) {

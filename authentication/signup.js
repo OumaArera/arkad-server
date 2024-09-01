@@ -25,7 +25,7 @@ const generateRandomPassword = () => {
   password += lowercase[Math.floor(Math.random() * lowercase.length)];
   password += numbers[Math.floor(Math.random() * numbers.length)];
   password += specialChars[Math.floor(Math.random() * specialChars.length)];
-  while (password.length < 6) {
+  while (password.length < 9) {
     password += allChars[Math.floor(Math.random() * allChars.length)];
   }
 
