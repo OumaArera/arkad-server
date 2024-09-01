@@ -9,7 +9,6 @@ const authenticateToken = (req, res, next) => {
   if (!token) {
     return res.status(401).json({
       success: false,
-      error: true,
       message: 'Access denied. No token provided.',
       statusCode: 401
     });
@@ -23,7 +22,6 @@ const authenticateToken = (req, res, next) => {
   } catch (error) {
     return res.status(403).json({
       success: false,
-      error: true,
       message: 'Access denied, please login.',
       statusCode: 403
     });
