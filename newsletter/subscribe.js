@@ -1,7 +1,6 @@
 const express = require('express');
 const db = require('../models');
 const CryptoJS = require('crypto-js');
-const messages = require('../models/messages');
 require('dotenv').config();
 
 const router = express.Router();
