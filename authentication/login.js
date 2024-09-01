@@ -7,11 +7,6 @@ require('dotenv').config();
 
 const router = express.Router();
 
-const validateEmail = (email) => {
-  const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return re.test(String(email).toLowerCase());
-};
-
 router.post('/', async (req, res) => {
   const { iv, ciphertext } = req.body;
 
@@ -41,10 +36,10 @@ router.post('/', async (req, res) => {
     const userData = JSON.parse(decryptedData);
     const { username, password } = userData;
 
-    if (!username || !validateEmail(username)) {
+    if (!username) {
       return res.status(400).json({
         success: false,
-        message: 'Invalid email format',
+        message: 'Username or password is incorrect',
         statusCode: 400
       });
     }
@@ -69,7 +64,7 @@ router.post('/', async (req, res) => {
 
     const saltKey = process.env.SALTING_KEY;
     if (!saltKey) {
-      throw new Error('Salting key not found');
+      throw new Error('Missing required keys');
     }
 
     const saltedPassword = password + saltKey;

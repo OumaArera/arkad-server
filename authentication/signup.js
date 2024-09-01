@@ -74,7 +74,7 @@ router.post('/', async (req, res) => {
   try {
     const key = process.env.ENCRYPTION_KEY;
     if (!key) {
-      throw new Error('Encryption key not found');
+      throw new Error('Missing required keys');
     }
 
     const decryptedBytes = CryptoJS.AES.decrypt(ciphertext, CryptoJS.enc.Utf8.parse(key), {
@@ -94,11 +94,21 @@ router.post('/', async (req, res) => {
         message: 'Invalid email format',
         statusCode: 400,
       });
+    };
+
+    const user = await db.User.findOne({ where: { username } });
+
+    if (user){
+      return res.status(409).json({
+        success: false,
+        message: 'Username already exist',
+        statusCode: 409
+      })
     }
 
     const saltKey = process.env.SALTING_KEY;
     if (!saltKey) {
-      throw new Error('Salting key not found');
+      throw new Error('Missing required keys');
     }
 
     const password = generateRandomPassword();
