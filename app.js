@@ -4,6 +4,7 @@ const signup = require("./authentication/signup");
 const login = require("./authentication/login");
 const forgotPassword = require("./authentication/forgotPassword");
 const changePassword = require('./authentication/changePassword');
+const postMessage = require("./messages/postMessages");
 const cors = require('cors'); 
 require('dotenv').config();
 
@@ -21,6 +22,7 @@ app.use('/users/signup', signup);
 app.use("/users/login", login);
 app.use("/users/reset-password", forgotPassword);
 app.use('/users/change-password', changePassword);
+app.use("/users/message", postMessage);
 
 app.get('/', (req, res) => {
   res.send('Hello World!');
