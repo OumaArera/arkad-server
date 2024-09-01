@@ -2,6 +2,8 @@ const express = require('express');
 const db = require('./models');
 const signup = require("./authentication/signup");
 const login = require("./authentication/login");
+const forgotPassword = require("./authentication/forgotPassword");
+const changePassword = require('./authentication/changePassword');
 const cors = require('cors'); 
 require('dotenv').config();
 
@@ -17,6 +19,8 @@ app.use(express.json());
 // Define routes
 app.use('/users/signup', signup);
 app.use("/users/login", login);
+app.use("/users/reset-password", forgotPassword);
+app.use('/users/change-password', changePassword);
 
 app.get('/', (req, res) => {
   res.send('Hello World!');

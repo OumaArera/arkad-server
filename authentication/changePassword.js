@@ -1,20 +1,20 @@
 const express = require('express');
-const db = require('../models');  
+const db = require('../models');
 const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
 const CryptoJS = require('crypto-js');
+const authenticateToken = require("./authenticateToken");
 require('dotenv').config();
 
 const router = express.Router();
 
-router.post('/', async (req, res) => {
+router.post('/', authenticateToken, async (req, res) => {
   const { iv, ciphertext } = req.body;
 
   if (!iv || !ciphertext) {
     return res.status(400).json({
       success: false,
       message: 'Invalid data. Missing required fields',
-      statusCode: 400
+      statusCode: 400,
     });
   }
 
@@ -24,41 +24,33 @@ router.post('/', async (req, res) => {
       throw new Error('Missing required keys');
     }
 
+    // Decrypt the incoming data
     const decryptedBytes = CryptoJS.AES.decrypt(ciphertext, CryptoJS.enc.Utf8.parse(key), {
       iv: CryptoJS.enc.Hex.parse(iv),
       padding: CryptoJS.pad.Pkcs7,
-      mode: CryptoJS.mode.CBC
+      mode: CryptoJS.mode.CBC,
     });
-
     let decryptedData = decryptedBytes.toString(CryptoJS.enc.Utf8);
-    decryptedData = decryptedData.replace(/\0+$/, '');
+    decryptedData = decryptedData.replace(/\0+$/, '');  // Remove trailing null bytes
 
     const userData = JSON.parse(decryptedData);
     const { username, password } = userData;
 
-    if (!username) {
+    if (!username || !password) {
       return res.status(400).json({
         success: false,
-        message: 'Username or password is incorrect',
-        statusCode: 400
+        message: 'Username and password are required',
+        statusCode: 400,
       });
     }
 
-    if (!password) {
-      return res.status(400).json({
-        success: false,
-        message: 'Username or password is incorrect',
-        statusCode: 400
-      });
-    }
-
+    // Check if the user exists
     const user = await db.User.findOne({ where: { username } });
-
     if (!user) {
-      return res.status(401).json({
+      return res.status(404).json({
         success: false,
-        message: 'Username or password is incorrect',
-        statusCode: 401
+        message: 'User not found',
+        statusCode: 404,
       });
     }
 
@@ -67,32 +59,24 @@ router.post('/', async (req, res) => {
       throw new Error('Missing required keys');
     }
 
+    // Salt and hash the new password
     const saltedPassword = password + saltKey;
-    const isPasswordValid = await bcrypt.compare(saltedPassword, user.password);
+    const hashedPassword = await bcrypt.hash(saltedPassword, 10);
 
-    if (!isPasswordValid) {
-      return res.status(401).json({
-        success: false,
-        message: 'Username or password is incorrect',
-        statusCode: 401
-      });
-    }
-
-    const token = jwt.sign({ id: user.id, username: user.username }, process.env.JWT_SECRET_KEY, {
-      expiresIn: '1d',
-    });
+    // Update the user's password
+    user.password = hashedPassword;
+    await user.save();
 
     return res.status(200).json({
-      accessToken: token,
       success: true,
-      statusCode: 200
+      message: 'Password updated successfully',
+      statusCode: 200,
     });
   } catch (error) {
-    console.error('Error signing in user:', error);
     return res.status(500).json({
       success: false,
       message: 'Internal server error',
-      statusCode: 500
+      statusCode: 500,
     });
   }
 });
