@@ -8,6 +8,8 @@ const postMessage = require("./messages/postMessages");
 const getMessages = require('./messages/getMessages');
 const manageMessage = require("./messages/manageMessage");
 const emailSubscription = require("./newsletter/subscribe");
+const postAchievement = require("./achievements/postAchievements");
+const getAchievements = require("./achievements/getAchievements");
 const cors = require('cors'); 
 require('dotenv').config();
 
@@ -29,6 +31,8 @@ app.use("/users/message", postMessage);
 app.use("/users/message", getMessages);
 app.use("/users/message", manageMessage);
 app.use("/users/subscribe", emailSubscription);
+app.use("/users/achievement", postAchievement);
+app.use("/users/achievement", getAchievements)
 
 app.get('/', (req, res) => {
   res.send('Hello World!');
