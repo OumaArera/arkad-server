@@ -11,14 +11,14 @@ const router = express.Router();
 
 // Helper function to validate data types
 const validateData = (userData) => {
-  const { userId, description, venue, date } = userData;
+  const { userId, title, venue, date } = userData;
 
   if (!userId || typeof userId !== 'number') {
     return { valid: false, message: 'Invalid userId' };
   }
 
-  if (!description || typeof description !== 'string') {
-    return { valid: false, message: 'Invalid description' };
+  if (!title || typeof title !== 'string') {
+    return { valid: false, message: 'Invalid Title' };
   }
 
   if (!venue || typeof venue !== 'string') {
@@ -80,10 +80,10 @@ router.post('/', authenticateToken, upload.single('image'), async (req, res) => 
     decryptedData = decryptedData.replace(/\0+$/, '');
 
     const userData = JSON.parse(decryptedData);
-    const { userId, description, venue, date } = userData;
+    const { userId, title, venue, date } = userData;
 
     // Validate the data (this function can be defined separately)
-    const validation = validateData({ userId, description, venue, date });
+    const validation = validateData({ userId, title, venue, date });
     if (!validation.valid) {
       return res.status(400).json({
         success: false,
@@ -100,17 +100,17 @@ router.post('/', authenticateToken, upload.single('image'), async (req, res) => 
     }
 
     // Store data in the database with the image URL
-    await db.Achievement.create({
+    await db.Activity.create({
       userId,
       image: imageUrl,
-      description,
+      title,
       venue,
       date,
     });
 
     return res.status(201).json({
       success: true,
-      message: 'Achievement created successfully',
+      message: 'Event created successfully',
       statusCode: 201,
     });
 

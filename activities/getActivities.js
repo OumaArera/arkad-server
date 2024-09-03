@@ -6,7 +6,7 @@ const router = express.Router();
 router.get('/', async (req, res) => {
   try {
     // Fetch all achievements and order them by id in descending order
-    const achievements = await db.Achievement.findAll({
+    const achievements = await db.Activity.findAll({
       order: [['id', 'DESC']],
     });
 
@@ -28,10 +28,10 @@ router.get('/', async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Error retrieving achievements:', error);
+    console.error('Error retrieving activities:', error);
     return res.status(500).json({
       success: false,
-      message: 'An error occurred while retrieving the achievements',
+      message: 'An error occurred while retrieving the activities',
       statusCode: 500,
     });
   }

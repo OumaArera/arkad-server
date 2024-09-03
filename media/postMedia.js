@@ -9,29 +9,6 @@ require('dotenv').config();
 
 const router = express.Router();
 
-// Helper function to validate data types
-const validateData = (userData) => {
-  const { userId, description, venue, date } = userData;
-
-  if (!userId || typeof userId !== 'number') {
-    return { valid: false, message: 'Invalid userId' };
-  }
-
-  if (!description || typeof description !== 'string') {
-    return { valid: false, message: 'Invalid description' };
-  }
-
-  if (!venue || typeof venue !== 'string') {
-    return { valid: false, message: 'Invalid venue' };
-  }
-
-  if (!date || isNaN(Date.parse(date))) {
-    return { valid: false, message: 'Invalid date' };
-  }
-
-  return { valid: true };
-};
-
 // Configure multer for file uploads (disk storage)
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -47,13 +24,13 @@ const storage = multer.diskStorage({
 
 const upload = multer({
   storage: storage,
-  limits: { fileSize: 10 * 1024 * 1024 } // 10MB limit
+  limits: { fileSize: 10 * 1024 * 1024 } // 10MB limit per file
 });
 
-// POST route to create a new achievement
-router.post('/', authenticateToken, upload.single('image'), async (req, res) => {
+// POST route to handle media uploads
+router.post('/', authenticateToken, upload.array('images', 10), async (req, res) => {
   const { iv, ciphertext } = req.body;
-  const file = req.file;
+  const files = req.files;
 
   if (!iv || !ciphertext) {
     return res.status(400).json({
@@ -80,42 +57,39 @@ router.post('/', authenticateToken, upload.single('image'), async (req, res) => 
     decryptedData = decryptedData.replace(/\0+$/, '');
 
     const userData = JSON.parse(decryptedData);
-    const { userId, description, venue, date } = userData;
+    const { userId, description } = userData;
 
-    // Validate the data (this function can be defined separately)
-    const validation = validateData({ userId, description, venue, date });
-    if (!validation.valid) {
+    // Validate data
+    if (!userId || !description) {
       return res.status(400).json({
         success: false,
-        message: validation.message,
+        message: 'Missing or invalid data',
         statusCode: 400,
       });
     }
 
-    let imageUrl = null;
+    // Prepare array to store image paths
+    let mediaUrls = [];
 
-    if (file) {
-      // Define the image URL path (relative to the public directory)
-      imageUrl = `/public/uploads/${file.filename}`;
+    if (files && files.length > 0) {
+      mediaUrls = files.map(file => `/public/uploads/${file.filename}`);
     }
 
-    // Store data in the database with the image URL
-    await db.Achievement.create({
+    // Store data in the database with the media paths
+    await db.Media.create({
       userId,
-      image: imageUrl,
+      media: JSON.stringify(mediaUrls),
       description,
-      venue,
-      date,
     });
 
     return res.status(201).json({
       success: true,
-      message: 'Achievement created successfully',
+      message: 'Media uploaded successfully',
       statusCode: 201,
     });
 
   } catch (error) {
-    console.error('Error creating achievement:', error);
+    console.error('Error uploading media:', error);
     return res.status(500).json({
       success: false,
       message: 'An error occurred while processing your request',

@@ -1,19 +1,18 @@
 const express = require('express');
 const db = require('../models');
+const authenticateToken = require("../authentication/authenticateToken");
 
 const router = express.Router();
 
-router.get('/', async (req, res) => {
+// Existing GET endpoint to fetch achievements
+router.get('/', authenticateToken, async (req, res) => {
   try {
-    // Fetch all achievements and order them by id in descending order
     const achievements = await db.Achievement.findAll({
       order: [['id', 'DESC']],
     });
 
-    // Get the base URL from the request
     const baseUrl = `${req.protocol}://${req.get('host')}`;
 
-    // Modify the achievements to include full image URLs
     const achievementsWithFullImageUrls = achievements.map(achievement => {
       return {
         ...achievement.dataValues,
@@ -32,6 +31,30 @@ router.get('/', async (req, res) => {
     return res.status(500).json({
       success: false,
       message: 'An error occurred while retrieving the achievements',
+      statusCode: 500,
+    });
+  }
+});
+
+// New DELETE endpoint to delete all achievements
+router.delete('/', async (req, res) => {
+  try {
+    await db.Achievement.destroy({
+      where: {},
+      truncate: true,
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: 'All achievements have been deleted.',
+      statusCode: 200,
+    });
+
+  } catch (error) {
+    console.error('Error deleting achievements:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'An error occurred while deleting the achievements',
       statusCode: 500,
     });
   }
