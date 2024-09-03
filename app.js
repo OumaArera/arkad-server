@@ -1,5 +1,6 @@
 const express = require('express');
-const db = require('./models');
+const db = require('./models' );
+const path = require('path');
 const signup = require("./authentication/signup");
 const login = require("./authentication/login");
 const forgotPassword = require("./authentication/forgotPassword");
@@ -21,6 +22,8 @@ app.use(cors());
 
 // Body parsing middleware
 app.use(express.json());
+
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Define routes
 app.use('/users/signup', signup);

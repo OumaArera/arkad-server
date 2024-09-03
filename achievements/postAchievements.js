@@ -4,6 +4,7 @@ const CryptoJS = require('crypto-js');
 const authenticateToken = require("../authentication/authenticateToken");
 const path = require('path');
 const fs = require('fs');
+const multer = require('multer');
 require('dotenv').config();
 
 const router = express.Router();
@@ -31,8 +32,28 @@ const validateData = (userData) => {
   return { valid: true };
 };
 
-router.post('/', authenticateToken, async (req, res) => {
+// Configure multer for file uploads (disk storage)
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    const uploadPath = path.join(__dirname, '..', 'public', 'uploads');
+    fs.mkdirSync(uploadPath, { recursive: true });
+    cb(null, uploadPath);
+  },
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    cb(null, `image_${uniqueSuffix}${path.extname(file.originalname)}`);
+  }
+});
+
+const upload = multer({
+  storage: storage,
+  limits: { fileSize: 10 * 1024 * 1024 } // 10MB limit
+});
+
+// POST route to create a new achievement
+router.post('/', authenticateToken, upload.single('image'), async (req, res) => {
   const { iv, ciphertext } = req.body;
+  const file = req.file; // Multer handles file upload
 
   if (!iv || !ciphertext) {
     return res.status(400).json({
@@ -48,6 +69,7 @@ router.post('/', authenticateToken, async (req, res) => {
       throw new Error('Missing required encryption key');
     }
 
+    // Decrypting the data
     const decryptedBytes = CryptoJS.AES.decrypt(ciphertext, CryptoJS.enc.Utf8.parse(key), {
       iv: CryptoJS.enc.Hex.parse(iv),
       padding: CryptoJS.pad.Pkcs7,
@@ -58,9 +80,9 @@ router.post('/', authenticateToken, async (req, res) => {
     decryptedData = decryptedData.replace(/\0+$/, '');
 
     const userData = JSON.parse(decryptedData);
-    const { userId, image, description, venue, date } = userData;
+    const { userId, description, venue, date } = userData;
 
-    // Validate data types
+    // Validate the data
     const validation = validateData({ userId, description, venue, date });
     if (!validation.valid) {
       return res.status(400).json({
@@ -69,33 +91,18 @@ router.post('/', authenticateToken, async (req, res) => {
         statusCode: 400,
       });
     }
-    console.log(userId);
-    console.log(image);
-    console.log(description);
-    console.log(venue);
-    console.log(date);
 
-    // Handle image storage
-    const base64Data = image.replace(/^data:image\/\w+;base64,/, '');
-    const buffer = Buffer.from(base64Data, 'base64');
+    let imageUrl = null;
 
-    // Define image filename and path
-    const filename = `image_${Date.now()}.png`;
-    const imagePath = path.join(__dirname, '..', 'uploads', filename);
-
-    // Ensure the 'uploads' directory exists
-    fs.mkdirSync(path.join(__dirname, '..', 'uploads'), { recursive: true });
-
-    // Write image to the server
-    fs.writeFileSync(imagePath, buffer);
-
-    // Define image URL path
-    const imageUrl = `/uploads/${filename}`;
+    if (file) {
+      // Define the image URL path (relative to the public directory)
+      imageUrl = `/uploads/${file.filename}`;
+    }
 
     // Store data in the database with the image URL
     const newAchievement = await db.Achievement.create({
       userId,
-      image: imageUrl, // Store the URL path instead of the absolute path
+      image: imageUrl, 
       description,
       venue,
       date,
