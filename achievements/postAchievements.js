@@ -53,7 +53,7 @@ const upload = multer({
 // POST route to create a new achievement
 router.post('/', authenticateToken, upload.single('image'), async (req, res) => {
   const { iv, ciphertext } = req.body;
-  const file = req.file; // Multer handles file upload
+  const file = req.file;
 
   if (!iv || !ciphertext) {
     return res.status(400).json({
@@ -82,7 +82,7 @@ router.post('/', authenticateToken, upload.single('image'), async (req, res) => 
     const userData = JSON.parse(decryptedData);
     const { userId, description, venue, date } = userData;
 
-    // Validate the data
+    // Validate the data (this function can be defined separately)
     const validation = validateData({ userId, description, venue, date });
     if (!validation.valid) {
       return res.status(400).json({
@@ -96,13 +96,13 @@ router.post('/', authenticateToken, upload.single('image'), async (req, res) => 
 
     if (file) {
       // Define the image URL path (relative to the public directory)
-      imageUrl = `/uploads/${file.filename}`;
+      imageUrl = `/public/uploads/${file.filename}`;
     }
 
     // Store data in the database with the image URL
     const newAchievement = await db.Achievement.create({
       userId,
-      image: imageUrl, 
+      image: imageUrl,
       description,
       venue,
       date,
