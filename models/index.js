@@ -7,6 +7,7 @@ const Subscription = require("./subription")(sequelize, Sequelize);
 const Achievement = require("./achievements")(sequelize, Sequelize);
 const Activity = require("./activities")(sequelize, Sequelize);
 const Media = require("./media")(sequelize, Sequelize);
+const Member = require("./members")(sequelize, Sequelize);
 
 
 const db = {
@@ -17,7 +18,8 @@ const db = {
   Subscription,
   Achievement,
   Activity,
-  Media
+  Media,
+  Member
 };
 
 // Define associations
@@ -27,5 +29,6 @@ if(Subscription.associate) Subscription.associate(db);
 if(Achievement.associate) Achievement.associate(db);
 if(Activity.associate) Activity.associate(db);
 if(Media.associate) Media.associate(db);
+if(Member.associate) Member.associate(db);
 
 module.exports = db;
