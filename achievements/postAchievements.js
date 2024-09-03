@@ -69,13 +69,19 @@ router.post('/', authenticateToken, async (req, res) => {
         statusCode: 400,
       });
     }
+    console.log(userId);
+    console.log(image);
+    console.log(description);
+    console.log(venue);
+    console.log(date);
 
     // Handle image storage
     const base64Data = image.replace(/^data:image\/\w+;base64,/, '');
     const buffer = Buffer.from(base64Data, 'base64');
 
-    // Define image path and filename
-    const imagePath = path.join(__dirname, '..', 'uploads', `image_${Date.now()}.png`);
+    // Define image filename and path
+    const filename = `image_${Date.now()}.png`;
+    const imagePath = path.join(__dirname, '..', 'uploads', filename);
 
     // Ensure the 'uploads' directory exists
     fs.mkdirSync(path.join(__dirname, '..', 'uploads'), { recursive: true });
@@ -83,10 +89,13 @@ router.post('/', authenticateToken, async (req, res) => {
     // Write image to the server
     fs.writeFileSync(imagePath, buffer);
 
-    // Store data in the database
+    // Define image URL path
+    const imageUrl = `/uploads/${filename}`;
+
+    // Store data in the database with the image URL
     const newAchievement = await db.Achievement.create({
       userId,
-      image: imagePath,
+      image: imageUrl, // Store the URL path instead of the absolute path
       description,
       venue,
       date,

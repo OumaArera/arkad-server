@@ -26,6 +26,8 @@ if(Message.associate){
 if(Subscription.associate){
   Subscription.associate(db);
 }
-Achievement.associate(db);
+if(Achievement.associate){
+  Achievement.associate(db);
+}
 
 module.exports = db;
