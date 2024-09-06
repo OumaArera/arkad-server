@@ -1,8 +1,23 @@
 const express = require('express');
+const CryptoJS = require('crypto-js');
 const authenticateToken = require("../authentication/authenticateToken");
 const db = require('../models');
+require('dotenv').config();
 
 const router = express.Router();
+
+const encryptData = (data, key) => {
+  const iv = CryptoJS.lib.WordArray.random(16);
+  const encrypted = CryptoJS.AES.encrypt(JSON.stringify(data), CryptoJS.enc.Utf8.parse(key), {
+    iv: iv,
+    padding: CryptoJS.pad.Pkcs7,
+    mode: CryptoJS.mode.CBC,
+  });
+  return {
+    iv: iv.toString(CryptoJS.enc.Hex),
+    ciphertext: encrypted.toString(),
+  };
+};
 
 router.get('/', authenticateToken, async (req, res) => {
   try {
@@ -18,10 +33,14 @@ router.get('/', authenticateToken, async (req, res) => {
         statusCode: 404,
       });
     }
+    const key = process.env.ENCRYPTION_KEY;
+    if (!key) throw new Error('Missing required keys');
+    
+    const encryptedMembers = encryptData(pendingMembers, key);
 
     return res.status(200).json({
       success: true,
-      data: pendingMembers,
+      data: encryptedMembers,
       statusCode: 200,
     });
 
