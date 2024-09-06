@@ -37,7 +37,6 @@ router.post('/', async (req, res) => {
     decryptedData = decryptedData.replace(/\0+$/, '');
 
     const userData = JSON.parse(decryptedData);
-    Object.entries(userData).forEach(([key, value]) => console.log(`${key} : ${value}`));
     const { organizationName, email, contactNumber, organizationType, website, location, reasonForPartnership } = userData;
 
     if (!organizationName || !email || !contactNumber || !organizationType || !website || !location || !reasonForPartnership) {
