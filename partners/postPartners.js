@@ -38,9 +38,9 @@ router.post('/', async (req, res) => {
 
     const userData = JSON.parse(decryptedData);
     Object.entries(userData).forEach(([key, value]) => console.log(`${key} : ${value}`));
-    const { fullName, email, phoneNumber, message } = userData;
+    const { organizationName, email, contactNumber, organizationType, website, location, reasonForPartnership } = userData;
 
-    if (!fullName || !email || !phoneNumber || !message) {
+    if (!organizationName || !email || !contactNumber || !organizationType || !website || !location || !reasonForPartnership) {
       return res.status(400).json({
         success: false,
         message: 'Missing or invalid required fields',
@@ -55,12 +55,11 @@ router.post('/', async (req, res) => {
         statusCode: 400,
       });
     };
-    const status ="unread";
 
-    await db.Message.create({ fullName, email, phoneNumber, message, status });
+    await db.Partner.create({ organizationName, email, contactNumber, organizationType, website, location, reasonForPartnership });
 
     return res.status(201).json({
-      message: 'Message sent successfully',
+      message: 'Request sent successfully',
       success: true,
       statusCode: 201,
     });
