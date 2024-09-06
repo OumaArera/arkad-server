@@ -38,6 +38,8 @@ app.use("/users/activities", require("./activities/updateActivities"));
 app.use("/users/activities", require("./activities/removeActivity"));
 app.use("/users/media", require("./media/postMedia"));
 app.use("/users/media", require("./media/getMedia"));
+app.use("/users/media", require("./media/removeMedia"));
+app.use("/users/media", require("./media/updateMedia"));
 app.use("/users/member", require("./members/newMembers"));
 app.use("/users/member", require("./members/getNewMembers"));
 app.use("/users/member", require("./members/approveNewMember"));
