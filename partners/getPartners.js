@@ -39,8 +39,6 @@ router.post('/', authenticateToken, async (req, res) => {
       statusCode: 400,
     });
   }
-  console.log("start: ", start);
-  console.log("End: ", end);
 
   // Convert the start and end dates into Date objects
   const startDate = new Date(start); 
