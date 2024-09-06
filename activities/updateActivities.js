@@ -29,13 +29,13 @@ const upload = multer({
 
 // Helper function to validate data types for updates
 const validateUpdateData = (userData) => {
-  const { description, location, date } = userData;
+  const { title, venue, date } = userData;
 
-  if (description && typeof description !== 'string') {
-    return { valid: false, message: 'Invalid description' };
+  if (title && typeof title !== 'string') {
+    return { valid: false, message: 'Invalid title' };
   }
 
-  if (location && typeof location !== 'string') {
+  if (venue && typeof venue !== 'string') {
     return { valid: false, message: 'Invalid venue' };
   }
 
@@ -81,10 +81,10 @@ router.put('/:id', authenticateToken, upload.single('image'), async (req, res) =
       decryptedData = JSON.parse(decrypted);
     }
 
-    const { description, location, date } = decryptedData;
+    const { title, venue, date } = decryptedData;
 
     // Validate the data (only for fields that are provided)
-    const validation = validateUpdateData({ description, location, date });
+    const validation = validateUpdateData({ title, venue, date });
     if (!validation.valid) {
       return res.status(400).json({
         success: false,
@@ -97,8 +97,8 @@ router.put('/:id', authenticateToken, upload.single('image'), async (req, res) =
     const updateFields = {};
 
     // Add fields to the update object if they are present in the request
-    if (description) updateFields.description = description;
-    if (venue) updateFields.location = venue;
+    if (title) updateFields.title = title;
+    if (venue) updateFields.venue = venue;
     if (date) updateFields.date = date;
 
     // If a file is uploaded, update the image field
