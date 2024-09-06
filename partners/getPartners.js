@@ -2,6 +2,8 @@ const express = require('express');
 const db = require('../models');
 const authenticateToken = require("../authentication/authenticateToken");
 const { Op } = require('sequelize');
+const CryptoJS = require('crypto-js');
+require('dotenv').config();
 
 const router = express.Router();
 
