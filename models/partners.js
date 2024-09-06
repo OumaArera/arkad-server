@@ -8,6 +8,7 @@ module.exports = (sequelize, DataTypes) => {
       organizationName: {
         type: DataTypes.STRING,
         allowNull: false,
+        unique: true
       },
       organizationType: {
         type: DataTypes.STRING,

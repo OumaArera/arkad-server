@@ -11,6 +11,7 @@ module.exports = {
       organizationName: {
         type: Sequelize.STRING,
         allowNull: false,
+        unique: true
       },
       organizationType: {
         type: Sequelize.STRING,
