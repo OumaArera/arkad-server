@@ -35,6 +35,7 @@ app.use("/users/achievement", require("./achievements/updateAchievement"));
 app.use("/users/activities", require("./activities/postActivities"));
 app.use("/users/activities", require("./activities/getActivities"));
 app.use("/users/activities", require("./activities/updateActivities"));
+app.use("/users/activities", require("./activities/removeActivity"));
 app.use("/users/media", require("./media/postMedia"));
 app.use("/users/media", require("./media/getMedia"));
 app.use("/users/member", require("./members/newMembers"));
