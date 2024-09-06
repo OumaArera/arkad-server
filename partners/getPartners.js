@@ -5,6 +5,19 @@ const { Op } = require('sequelize');
 
 const router = express.Router();
 
+const encryptData = (data, key) => {
+  const iv = CryptoJS.lib.WordArray.random(16);
+  const encrypted = CryptoJS.AES.encrypt(JSON.stringify(data), CryptoJS.enc.Utf8.parse(key), {
+    iv: iv,
+    padding: CryptoJS.pad.Pkcs7,
+    mode: CryptoJS.mode.CBC,
+  });
+  return {
+    iv: iv.toString(CryptoJS.enc.Hex),
+    ciphertext: encrypted.toString(),
+  };
+};
+
 // Helper function to convert to title case
 const toTitleCase = (str) => {
   return str.replace(/\w\S*/g, (txt) => {
@@ -16,7 +29,7 @@ const toTitleCase = (str) => {
 router.get('/', authenticateToken, async (req, res) => {
   const { start, end } = req.body;
 
-  // Validate the existence of start and end date
+
   if (!start || !end) {
     return res.status(400).json({
       success: false,
@@ -25,7 +38,6 @@ router.get('/', authenticateToken, async (req, res) => {
     });
   }
 
-  // Convert start and end dates to valid date formats
   const startDate = new Date(`${start}-01`); 
   const endDate = new Date(`${end}-01`);
   endDate.setMonth(endDate.getMonth() + 1); 
@@ -63,9 +75,14 @@ router.get('/', authenticateToken, async (req, res) => {
       organizationName: toTitleCase(partner.organizationName),
     }));
 
+    const key = process.env.ENCRYPTION_KEY;
+    if (!key) throw new Error('Missing required keys');
+    
+    const encryptedPartners = encryptData(partnersWithTitleCase, key);
+
     return res.status(200).json({
       success: true,
-      data: partnersWithTitleCase,
+      data: encryptedPartners,
       statusCode: 200,
     });
   } catch (error) {
