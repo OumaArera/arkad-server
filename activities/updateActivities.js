@@ -81,10 +81,10 @@ router.put('/:id', authenticateToken, upload.single('image'), async (req, res) =
       decryptedData = JSON.parse(decrypted);
     }
 
-    const { description, venue, date } = decryptedData;
+    const { description, location, date } = decryptedData;
 
     // Validate the data (only for fields that are provided)
-    const validation = validateUpdateData({ description, venue, date });
+    const validation = validateUpdateData({ description, location, date });
     if (!validation.valid) {
       return res.status(400).json({
         success: false,
@@ -98,24 +98,25 @@ router.put('/:id', authenticateToken, upload.single('image'), async (req, res) =
 
     // Add fields to the update object if they are present in the request
     if (description) updateFields.description = description;
-    if (venue) updateFields.venue = venue;
+    if (venue) updateFields.location = venue;
     if (date) updateFields.date = date;
 
     // If a file is uploaded, update the image field
     if (file) {
       const imageUrl = `/public/uploads/${file.filename}`;
       updateFields.image = imageUrl;
+
     }
 
     // Update the achievement in the database
-    const [updated] = await db.Achievement.update(updateFields, {
+    const [updated] = await db.Activity.update(updateFields, {
       where: { id: achievementId },
     });
 
     if (updated) {
       return res.status(200).json({
         success: true,
-        message: 'Achievement updated successfully',
+        message: 'Activities updated successfully',
         statusCode: 200,
       });
     } else {

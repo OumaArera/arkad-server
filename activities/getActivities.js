@@ -1,12 +1,29 @@
 const express = require('express');
 const db = require('../models');
+const CryptoJS = require('crypto-js');
+const authenticateToken = require("../authentication/authenticateToken");
+require('dotenv').config();
 
 const router = express.Router();
 
-router.get('/', async (req, res) => {
+const encryptData = (data, key) => {
+  const iv = CryptoJS.lib.WordArray.random(16);
+  const encrypted = CryptoJS.AES.encrypt(JSON.stringify(data), CryptoJS.enc.Utf8.parse(key), {
+    iv: iv,
+    padding: CryptoJS.pad.Pkcs7,
+    mode: CryptoJS.mode.CBC,
+  });
+  return {
+    iv: iv.toString(CryptoJS.enc.Hex),
+    ciphertext: encrypted.toString(),
+  };
+};
+
+
+router.get('/', authenticateToken, async (req, res) => {
   try {
     // Fetch all achievements and order them by id in descending order
-    const achievements = await db.Activity.findAll({
+    const activities = await db.Activity.findAll({
       order: [['id', 'DESC']],
     });
 
@@ -14,16 +31,23 @@ router.get('/', async (req, res) => {
     const baseUrl = `${req.protocol}://${req.get('host')}`;
 
     // Modify the achievements to include full image URLs
-    const achievementsWithFullImageUrls = achievements.map(achievement => {
+    const activitiesWithFullImageUrls = activities.map(activity => {
       return {
-        ...achievement.dataValues,
-        image: `${baseUrl}${achievement.image}`,
+        ...activity.dataValues,
+        image: `${baseUrl}${activity.image}`,
       };
     });
 
+    const key = process.env.ENCRYPTION_KEY;
+    if (!key) {
+      throw new Error('Missing required keys');
+    }
+
+    const encryptedActivities = encryptData(activitiesWithFullImageUrls, key);
+
     return res.status(200).json({
       success: true,
-      data: achievementsWithFullImageUrls,
+      data: encryptedActivities,
       statusCode: 200,
     });
 
