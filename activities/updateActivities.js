@@ -29,13 +29,13 @@ const upload = multer({
 
 // Helper function to validate data types for updates
 const validateUpdateData = (userData) => {
-  const { description, venue, date } = userData;
+  const { description, location, date } = userData;
 
   if (description && typeof description !== 'string') {
     return { valid: false, message: 'Invalid description' };
   }
 
-  if (venue && typeof venue !== 'string') {
+  if (location && typeof location !== 'string') {
     return { valid: false, message: 'Invalid venue' };
   }
 
