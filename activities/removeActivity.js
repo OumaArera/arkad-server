@@ -5,9 +5,9 @@ const authenticateToken = require("../authentication/authenticateToken");
 const router = express.Router();
 
 router.delete('/:id', authenticateToken, async (req, res) => {
-  const achievementId = req.params.id;
+  const activityId = req.params.id;
 
-  if (!achievementId) {
+  if (!activityId) {
     return res.status(400).json({
       success: false,
       message: 'Activity ID is required',
@@ -17,7 +17,7 @@ router.delete('/:id', authenticateToken, async (req, res) => {
 
   try {
     const result = await db.Activity.destroy({
-      where: { id: achievementId }
+      where: { id: activityId }
     });
 
     if (result === 0) {
