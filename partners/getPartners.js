@@ -28,7 +28,7 @@ const toTitleCase = (str) => {
 };
 
 // Endpoint to retrieve partners within a specific date range (YYYY-MM-DD format)
-router.get('/', authenticateToken, async (req, res) => {
+router.post('/', authenticateToken, async (req, res) => {
   const { start, end } = req.body;
 
   // Validate the existence of start and end date
@@ -39,6 +39,8 @@ router.get('/', authenticateToken, async (req, res) => {
       statusCode: 400,
     });
   }
+  console.log("start: ", start);
+  console.log("End: ", end);
 
   // Convert the start and end dates into Date objects
   const startDate = new Date(start); 
@@ -54,7 +56,7 @@ router.get('/', authenticateToken, async (req, res) => {
   }
 
   // Adjust endDate to include the entire last day of the given period
-  endDate.setHours(23, 59, 59, 999);
+  endDate.setDate(endDate.getDate() + 1);
 
   try {
     // Query the database to retrieve partners within the date range
