@@ -10,7 +10,6 @@ const validateEmail = (email) => {
   return re.test(String(email).toLowerCase());
 };
 
-
 router.post('/', async (req, res) => {
   const { iv, ciphertext } = req.body;
 
@@ -37,25 +36,47 @@ router.post('/', async (req, res) => {
     decryptedData = decryptedData.replace(/\0+$/, '');
 
     const userData = JSON.parse(decryptedData);
-    const { organizationName, email, contactNumber, organizationType, website, location, reasonForPartnership } = userData;
+    let { organizationName, email, contactNumber, organizationType, website, location, reasonForPartnership } = userData;
 
+    // Ensure all required fields are present
     if (!organizationName || !email || !contactNumber || !organizationType || !website || !location || !reasonForPartnership) {
       return res.status(400).json({
         success: false,
         message: 'Missing or invalid required fields',
         statusCode: 400,
       });
-    };
+    }
 
+    // Validate email format
     if (!validateEmail(email)) {
       return res.status(400).json({
         success: false,
         message: 'Invalid email format',
         statusCode: 400,
       });
-    };
+    }
+    const orgNameLowerCase = organizationName.toLowerCase();
+    const existingPartner = await db.Partner.findOne({
+      where: db.Sequelize.where(db.Sequelize.fn('lower', db.Sequelize.col('organizationName')), orgNameLowerCase)
+    });
 
-    await db.Partner.create({ organizationName, email, contactNumber, organizationType, website, location, reasonForPartnership });
+    if (existingPartner) {
+      return res.status(409).json({
+        success: false,
+        message: 'An organization with this name already exists.',
+        statusCode: 409,
+      });
+    }
+    
+    await db.Partner.create({ 
+      organizationName: orgNameLowerCase, 
+      email, 
+      contactNumber, 
+      organizationType, 
+      website, 
+      location, 
+      reasonForPartnership 
+    });
 
     return res.status(201).json({
       message: 'Request sent successfully',
@@ -63,6 +84,7 @@ router.post('/', async (req, res) => {
       statusCode: 201,
     });
   } catch (error) {
+    console.error('Error:', error);
     return res.status(500).json({
       success: false,
       message: 'Internal server error',
