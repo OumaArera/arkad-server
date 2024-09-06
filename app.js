@@ -31,6 +31,7 @@ app.use('/users/subscribe', require('./newsletter/subscribe'));
 app.use('/users/achievement', require('./achievements/postAchievements'));
 app.use('/users/achievement', require('./achievements/getAchievements'));
 app.use("/users/achievement", require("./achievements/removeAchievements"));
+app.use("/users/achievement", require("./achievements/updateAchievement"));
 app.use("/users/activities", require("./activities/postActivities"));
 app.use("/users/activities", require("./activities/getActivities"));
 app.use("/users/media", require("./media/postMedia"));
