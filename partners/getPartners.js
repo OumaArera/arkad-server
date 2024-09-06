@@ -29,7 +29,7 @@ const toTitleCase = (str) => {
 
 // Endpoint to retrieve partners within a specific date range (YYYY-MM-DD format)
 router.get('/', authenticateToken, async (req, res) => {
-  const { start, end } = req.params;
+  const { start, end } = req.body;
 
   // Validate the existence of start and end date
   if (!start || !end) {
