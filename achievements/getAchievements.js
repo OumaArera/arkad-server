@@ -49,7 +49,7 @@ router.get('/', authenticateToken, async (req, res) => {
       data: encryptedAchievements,
       statusCode: 200,
     });
-
+    console.log("HI")
   } catch (error) {
     console.error('Error retrieving achievements:', error);
     return res.status(500).json({
