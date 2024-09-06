@@ -27,11 +27,11 @@ const toTitleCase = (str) => {
   });
 };
 
-// Endpoint to retrieve partners within a specific date range
+// Endpoint to retrieve partners within a specific date range (YYYY-MM-DD format)
 router.get('/', authenticateToken, async (req, res) => {
   const { start, end } = req.body;
 
-
+  // Validate the existence of start and end date
   if (!start || !end) {
     return res.status(400).json({
       success: false,
@@ -40,18 +40,21 @@ router.get('/', authenticateToken, async (req, res) => {
     });
   }
 
-  const startDate = new Date(`${start}-01`); 
-  const endDate = new Date(`${end}-01`);
-  endDate.setMonth(endDate.getMonth() + 1); 
+  // Convert the start and end dates into Date objects
+  const startDate = new Date(start); 
+  const endDate = new Date(end);
 
-  // Validate that dates are valid
+  // Validate that the provided dates are in a valid format
   if (isNaN(startDate) || isNaN(endDate)) {
     return res.status(400).json({
       success: false,
-      message: 'Invalid date format. Please use "YYYY-MM" format for start and end',
+      message: 'Invalid date format. Please use "YYYY-MM-DD" format for start and end',
       statusCode: 400,
     });
   }
+
+  // Adjust endDate to include the entire last day of the given period
+  endDate.setHours(23, 59, 59, 999);
 
   try {
     // Query the database to retrieve partners within the date range
@@ -77,6 +80,7 @@ router.get('/', authenticateToken, async (req, res) => {
       organizationName: toTitleCase(partner.organizationName),
     }));
 
+    // Encrypt the data before sending it
     const key = process.env.ENCRYPTION_KEY;
     if (!key) throw new Error('Missing required keys');
     
