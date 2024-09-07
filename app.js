@@ -48,6 +48,9 @@ app.use("/users/partner", require("./partners/postPartners"));
 app.use("/users/partners", require("./partners/getPartners"));
 app.use("/users/newsletter", require("./newsletter/postNewsletter"));
 app.use("/users/leaders", require("./leadership/postLeader"));
+app.use("/users/leaders", require("./leadership/getLeaders"));
+app.use("/users/leaders", require("./leadership/putLeaders"));
+app.use("/users/leaders", require("./leadership/removeLeader"));
 
 app.get('/', (req, res) => {
   res.send('Hello World!');
