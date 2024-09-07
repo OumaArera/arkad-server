@@ -31,7 +31,7 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: true,
       },
       reasonForPartnership:{
-        type: DataTypes.STRING,
+        type: DataTypes.TEXT,
         allowNull: false
       }
     }, {

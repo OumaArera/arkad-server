@@ -45,7 +45,7 @@ module.exports = {
         allowNull: false,
       },
       reasonForJoining: {
-        type: Sequelize.STRING,
+        type: Sequelize.TEXT,
         allowNull: false,
       },
       memberNumber: {

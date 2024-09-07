@@ -34,7 +34,7 @@ module.exports = {
         allowNull: true,
       },
       reasonForPartnership: {
-        type: Sequelize.STRING,
+        type: Sequelize.TEXT,
         allowNull: false,
       },
       createdAt: {
