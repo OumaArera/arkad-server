@@ -43,6 +43,7 @@ app.use("/users/media", require("./media/updateMedia"));
 app.use("/users/member", require("./members/newMembers"));
 app.use("/users/member", require("./members/getNewMembers"));
 app.use("/users/member", require("./members/approveNewMember"));
+app.use("/users/member", require('./members/removeMember'));
 app.use("/users/all-members", require("./members/getAllMembers"));
 app.use("/users/partner", require("./partners/postPartners"));
 app.use("/users/partners", require("./partners/getPartners"));

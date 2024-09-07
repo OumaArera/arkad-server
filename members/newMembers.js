@@ -104,18 +104,26 @@ router.post("/", async (req, res) => {
       });
     }
 
-    // Generate unique member number
-    const memberNumber = await generateMemberNumber();
+    // Check if the email or phone number already exists
+    const existingMember = await db.Member.findOne({
+      where: {
+        [db.Sequelize.Op.or]: [
+          { email },
+          { phoneNumber }
+        ]
+      }
+    });
 
-    // Check if the member number is already assigned
-    const existingMember = await db.Member.findOne({ where: { memberNumber } });
     if (existingMember) {
       return res.status(400).json({
         success: false,
-        message: 'Member number already exists',
+        message: 'A member with this email or phone number already exists',
         statusCode: 400,
       });
     }
+
+    // Generate unique member number
+    const memberNumber = await generateMemberNumber();
 
     // Create new member
     await db.Member.create({

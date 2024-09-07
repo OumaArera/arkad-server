@@ -54,6 +54,14 @@ const sendEmail = async (firstName, lastName, username, password) => {
       <p><strong>Password:</strong> ${password}</p>
       <p>Welcome to Arkad Family,</p>
       <p>Best regards,<br/>Arkad Family</p>
+
+      <p>| <a href="https://arkadsmp.co.ke">Visit our website</a> |</p>
+      <p>| <a href="https://facebook.com/arkadsic">Facebook</a> |</p>
+      <p>| <a href="https://tiktok.com/@Arkad_SMP">TikTok</a> |</p>
+      <p>| <a href="https://x.com/ArkadSMP">X(Twitter)</a> |</p>
+      <p>| <a href="https://linkedin.com/company/arkadsmp">LinkedIn</a> |</p>
+      <p>| <a href="https://instagram.com/arkad_sic">Instagram</a> |</p>
+      <p>| <a href="ttps://youtube.com/@arkadfamilysic">YouTube</a> |</p>
     `,
   };
 
