@@ -46,7 +46,7 @@ router.get('/', async (req, res) => {
 
     return res.status(200).json({
       success: true,
-      data: activitiesWithFullImageUrls,
+      data: encryptedActivities,
       statusCode: 200,
     });
 
