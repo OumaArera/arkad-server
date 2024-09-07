@@ -52,6 +52,8 @@ app.use("/users/leaders", require("./leadership/postLeader"));
 app.use("/users/leaders", require("./leadership/getLeaders"));
 app.use("/users/leaders", require("./leadership/putLeaders"));
 app.use("/users/leaders", require("./leadership/removeLeader"));
+app.use("/users/volunteer", require("./volunteer/createVolunteer"));
+app.use("/users/volunteer", require("./volunteer/getVolunteers"));
 
 app.get('/', (req, res) => {
   res.send('Hello World!');
