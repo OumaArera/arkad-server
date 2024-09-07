@@ -10,7 +10,7 @@ const Media = require("./media")(sequelize, Sequelize);
 const Member = require("./members")(sequelize, Sequelize);
 const Partner = require("./partners")(sequelize, Sequelize);
 const Newsletter = require("./newsletter")(sequelize, Sequelize);
-
+const Leadership = require("./leadership")(sequelize, Sequelize);
 
 const db = {
   sequelize,
@@ -23,7 +23,8 @@ const db = {
   Media,
   Member,
   Partner,
-  Newsletter
+  Newsletter,
+  Leadership
 };
 
 // Define associations
@@ -36,5 +37,6 @@ if(Media.associate) Media.associate(db);
 if(Member.associate) Member.associate(db);
 if(Partner.associate) Partner.associate(db);
 if(Newsletter.associate) Newsletter.associate(db);
+if(Leadership.associate) Leadership.associate(db);
 
 module.exports = db;

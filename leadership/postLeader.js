@@ -11,22 +11,18 @@ const router = express.Router();
 
 // Helper function to validate data types
 const validateData = (userData) => {
-  const { userId, description, venue, date } = userData;
+  const { userId, name, role } = userData;
 
   if (!userId || typeof userId !== 'number') {
     return { valid: false, message: 'Invalid userId' };
   }
 
-  if (!description || typeof description !== 'string') {
-    return { valid: false, message: 'Invalid description' };
+  if (!name || typeof name !== 'string') {
+    return { valid: false, message: 'Invalid name' };
   }
 
-  if (!venue || typeof venue !== 'string') {
-    return { valid: false, message: 'Invalid venue' };
-  }
-
-  if (!date || isNaN(Date.parse(date))) {
-    return { valid: false, message: 'Invalid date' };
+  if (!role || typeof role !== 'string') {
+    return { valid: false, message: 'Invalid role' };
   }
 
   return { valid: true };
@@ -80,14 +76,27 @@ router.post('/', authenticateToken, upload.single('image'), async (req, res) => 
     decryptedData = decryptedData.replace(/\0+$/, '');
 
     const userData = JSON.parse(decryptedData);
-    const { userId, description, venue, date } = userData;
+    const { userId, name, role } = userData;
 
-    // Validate the data (this function can be defined separately)
-    const validation = validateData({ userId, description, venue, date });
+    // Validate the data
+    const validation = validateData({ userId, name, role });
     if (!validation.valid) {
       return res.status(400).json({
         success: false,
         message: validation.message,
+        statusCode: 400,
+      });
+    }
+
+    const lowerCaseRole = role.toLowerCase();
+
+    // Check for existing record with the same role
+    const existingLeadership = await db.Leadership.findOne({ where: { role: lowerCaseRole } });
+
+    if (existingLeadership) {
+      return res.status(400).json({
+        success: false,
+        message: 'Role already exists',
         statusCode: 400,
       });
     }
@@ -100,17 +109,16 @@ router.post('/', authenticateToken, upload.single('image'), async (req, res) => 
     }
 
     // Store data in the database with the image URL
-    await db.Achievement.create({
+    await db.Leadership.create({
       userId,
       image: imageUrl,
-      description,
-      venue,
-      date,
+      name,
+      role: lowerCaseRole,
     });
 
     return res.status(201).json({
       success: true,
-      message: 'Achievement created successfully',
+      message: 'Leader added successfully',
       statusCode: 201,
     });
 

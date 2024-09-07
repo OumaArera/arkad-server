@@ -47,6 +47,7 @@ app.use("/users/all-members", require("./members/getAllMembers"));
 app.use("/users/partner", require("./partners/postPartners"));
 app.use("/users/partners", require("./partners/getPartners"));
 app.use("/users/newsletter", require("./newsletter/postNewsletter"));
+app.use("/users/leaders", require("./leadership/postLeader"));
 
 app.get('/', (req, res) => {
   res.send('Hello World!');
