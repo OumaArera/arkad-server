@@ -1,6 +1,7 @@
 const express = require('express');
 const db = require('../models');
 const CryptoJS = require('crypto-js');
+const messages = require('../models/messages');
 require('dotenv').config();
 
 const router = express.Router();
@@ -86,6 +87,16 @@ router.post('/', async (req, res) => {
         message: 'Invalid email format',
         statusCode: 400,
       });
+    }
+
+    const volunt = await db.Volunteer.findOne({ where:{ email } });
+
+    if(volunt){
+      return res.status(400).json({
+        success: false,
+        message: "You already submitted request to participate to this event",
+        statusCode: 400
+      })
     }
 
     // Find the activity
