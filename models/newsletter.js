@@ -23,7 +23,7 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
       },
       sources: {
-        type: DataTypes.STRING,
+        type: DataTypes.JSON,
         allowNull: true,
       }
     }, {

@@ -26,7 +26,7 @@ module.exports = {
         allowNull: false,
       },
       sources: {
-        type: Sequelize.STRING,
+        type: Sequelize.JSON,
         allowNull: true,
       },
       createdAt: {
