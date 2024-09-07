@@ -26,7 +26,6 @@ router.get('/', async (req, res) => {
       order: [['id', 'DESC']],
     });
 
-    // Get the base URL from the request
     const baseUrl = `${req.protocol}://${req.get('host')}`;
 
     // Modify the achievements to include full image URLs
