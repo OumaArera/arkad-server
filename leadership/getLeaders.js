@@ -65,7 +65,7 @@ router.get('/', async (req, res) => {
     // Return the encrypted data in response
     return res.status(200).json({
       success: true,
-      data: formattedLeaderships,
+      data: encryptedDetails,
       statusCode: 200
     });
   } catch (error) {
