@@ -7,7 +7,6 @@ require('dotenv').config();
 
 const router = express.Router();
 
-// Utility function to decrypt incoming data
 const decryptData = (iv, ciphertext) => {
   const key = process.env.ENCRYPTION_KEY;
   if (!key) {
