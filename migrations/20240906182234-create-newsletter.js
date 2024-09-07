@@ -18,7 +18,7 @@ module.exports = {
         onDelete: 'CASCADE',
       },
       title: {
-        type: Sequelize.STRING,
+        type: Sequelize.STRING(500),
         allowNull: false,
       },
       content: {
