@@ -17,7 +17,7 @@ router.delete('/:id', authenticateToken, async (req, res) => {
 
   try {
     const result = await db.Leadership.destroy({
-      where: { id: achievementId }
+      where: { id: leader }
     });
 
     if (result === 0) {
