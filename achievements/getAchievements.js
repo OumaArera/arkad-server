@@ -1,7 +1,6 @@
 const express = require('express');
 const db = require('../models');
 const CryptoJS = require('crypto-js');
-const authenticateToken = require("../authentication/authenticateToken");
 require('dotenv').config();
 
 const router = express.Router();
@@ -19,7 +18,7 @@ const encryptData = (data, key) => {
   };
 };
 
-router.get('/', authenticateToken, async (req, res) => {
+router.get('/', async (req, res) => {
   try {
     // Fetch all achievements and order them by id in descending order
     const achievements = await db.Achievement.findAll({
