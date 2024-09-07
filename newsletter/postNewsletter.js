@@ -25,29 +25,32 @@ const decryptData = (iv, ciphertext) => {
 
 // Email sending function
 const sendNewsletterEmail = async (recipientEmail, title, content, sources) => {
-  const transporter = nodemailer.createTransport({
-    host: process.env.SMTP_HOST,
-    port: process.env.SMTP_PORT,
-    secure: false, 
-    auth: {
-      user: process.env.SMTP_USER,
-      pass: process.env.SMTP_PASSWORD,
-    },
-  });
+    const transporter = nodemailer.createTransport({
+        host: process.env.SMTP_HOST,
+        port: process.env.SMTP_PORT,
+        secure: false, 
+        auth: {
+        user: process.env.SMTP_USER,
+        pass: process.env.SMTP_PASSWORD,
+        },
+    });
 
-  const mailOptions = {
+    const formattedSources = sources && Array.isArray(sources) 
+    ? `<ul>${sources.map(source => `<li>${source}</li>`).join('')}</ul>`
+    : '';
+
+    const mailOptions = {
     from: `"Arkad Family" <${process.env.SMTP_USER}>`,
     to: recipientEmail,
     subject: `${title}`,
     html: `
-      <p>Dear Arkad Family member,</p>
-      <p>${content}</p>
-      ${sources ? `<p>${sources}</p>` : ''}
-      <p>Best regards,<br/>Arkad Family</p>
+        <p>Dear Arkad Family member,</p>
+        <p>${content}</p>
+        ${formattedSources ? `<p><strong>Sources:</strong></p>${formattedSources}` : ''}
+        <p>Best regards,<br/>Arkad Family</p>
     `,
-  };
-
-  return transporter.sendMail(mailOptions);
+    };
+    return transporter.sendMail(mailOptions);
 };
 
 
