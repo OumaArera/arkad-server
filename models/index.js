@@ -12,6 +12,7 @@ const Partner = require("./partners")(sequelize, Sequelize);
 const Newsletter = require("./newsletter")(sequelize, Sequelize);
 const Leadership = require("./leadership")(sequelize, Sequelize);
 const Volunteer = require("./volunteer")(sequelize, Sequelize);
+const Transaction = require("./transactions")(sequelize, Sequelize);
 
 const db = {
   sequelize,
@@ -26,7 +27,8 @@ const db = {
   Partner,
   Newsletter,
   Leadership,
-  Volunteer
+  Volunteer,
+  Transaction
 };
 
 // Define associations
@@ -41,5 +43,6 @@ if(Partner.associate) Partner.associate(db);
 if(Newsletter.associate) Newsletter.associate(db);
 if(Leadership.associate) Leadership.associate(db);
 if(Volunteer.associate) Volunteer.associate(db);
+if(Transaction.associate) Transaction.associate(db);
 
 module.exports = db;

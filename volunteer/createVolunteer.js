@@ -1,7 +1,6 @@
 const express = require('express');
 const db = require('../models');
 const CryptoJS = require('crypto-js');
-const messages = require('../models/messages');
 require('dotenv').config();
 
 const router = express.Router();
@@ -25,10 +24,16 @@ const sendEmail = async (email, fullName, activity) => {
     const mailOptions = {
         from: `"Arkad Family" <${process.env.SMTP_USER}>`,
         to: email,
-        subject: 'Welcome to the Arkad Family!',
+        subject: 'Thank You for Your Interest in Volunteering!',
         html: `
             <p>Dear ${fullName},</p>
-            
+            <br />
+            <p>Thank you for expressing your interest in volunteering for <strong>${activity}</strong> with The Arkad Family. </p>
+            <p>We have received your request and truly appreciate your willingness to contribute.</p>
+            <p>Our team will be in touch with you soon to share more details on how you can get involved in this exciting initiative.</p>
+            <p>In the meantime, if you have any questions or would like to learn more about us, feel free to visit our website or connect with us on social media.</p>
+            <p>We look forward to working with you!</p>
+            <br />
             <p>Best regards,<br/>The Arkad Family Team</p>
             <p>| <a href="https://arkadsmp.co.ke">Visit our website</a> |</p>
             <p>| <a href="https://facebook.com/arkadsic">Facebook</a> |</p>
@@ -123,6 +128,7 @@ router.post('/', async (req, res) => {
 
     // Proceed to create a new volunteer entry
     await db.Volunteer.create({ fullName, email, phoneNumber, location, activityId });
+    await sendEmail(email, fullName, activity);
 
     return res.status(201).json({
       message: 'Request sent successfully',
