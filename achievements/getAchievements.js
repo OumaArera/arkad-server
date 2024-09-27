@@ -20,15 +20,12 @@ const encryptData = (data, key) => {
 
 router.get('/', async (req, res) => {
   try {
-    // Fetch all achievements and order them by id in descending order
     const achievements = await db.Achievement.findAll({
       order: [['id', 'DESC']],
     });
 
-    // Get the base URL from the request
     const baseUrl = `${req.protocol}://${req.get('host')}`;
 
-    // Modify the achievements to include full image URLs
     const achievementsWithFullImageUrls = achievements.map(achievement => {
       return {
         ...achievement.dataValues,
