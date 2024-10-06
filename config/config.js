@@ -1,4 +1,6 @@
 require('dotenv').config(); 
+const { ssl } = require('pg/lib/defaults');
+const { certificate } = require('./certificate');
 
 module.exports = {
   development: {
@@ -8,10 +10,12 @@ module.exports = {
     host: process.env.DB_HOST,
     dialect: 'postgres',
     port: process.env.DB_PORT,
+    ssl:true,
     dialectOptions: {
       ssl: {
         require: true,
-        rejectUnauthorized: false 
+        rejectUnauthorized: true,
+        ca:certificate 
       }
     }
   },
@@ -22,10 +26,12 @@ module.exports = {
     host: process.env.DB_HOST,
     dialect: 'postgres',
     port: process.env.DB_PORT,
+    ssl:true,
     dialectOptions: {
       ssl: {
         require: true,
-        rejectUnauthorized: false
+        rejectUnauthorized: true,
+        ca:certificate
       }
     }
   },
@@ -36,10 +42,12 @@ module.exports = {
     host: process.env.DB_HOST,
     dialect: 'postgres',
     port: process.env.DB_PORT,
+    ssl:true,
     dialectOptions: {
       ssl: {
         require: true,
-        rejectUnauthorized: false
+        rejectUnauthorized: true,
+        ca:certificate
       }
     }
   }
