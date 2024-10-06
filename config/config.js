@@ -1,7 +1,4 @@
-require('dotenv').config();
-const fs = require('fs');
-const path = require('path');
-
+require('dotenv').config(); 
 
 module.exports = {
   development: {
@@ -14,8 +11,7 @@ module.exports = {
     dialectOptions: {
       ssl: {
         require: true,
-        rejectUnauthorized: false,
-        ca: process.env.SSL_CERTIFICATE.replace(/\\n/g, '\n') 
+        rejectUnauthorized: false 
       }
     }
   },
@@ -29,8 +25,7 @@ module.exports = {
     dialectOptions: {
       ssl: {
         require: true,
-        rejectUnauthorized: false,
-        ca: process.env.SSL_CERTIFICATE.replace(/\\n/g, '\n') 
+        rejectUnauthorized: false
       }
     }
   },
@@ -44,8 +39,7 @@ module.exports = {
     dialectOptions: {
       ssl: {
         require: true,
-        rejectUnauthorized: false,
-        ca: process.env.SSL_CERTIFICATE.replace(/\\n/g, '\n') 
+        rejectUnauthorized: false
       }
     }
   }
