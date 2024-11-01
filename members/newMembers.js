@@ -6,15 +6,20 @@ const router = express.Router();
 
 // Utility function to validate email format
 const validateEmail = (email) => {
-  const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return re.test(String(email).toLowerCase());
+  if (!email) return false; // Ensure email is not undefined or null
+
+  const trimmedEmail = email.trim();
+  const re = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+  return re.test(trimmedEmail);
 };
+
 
 // Utility function to validate phone number format
 const validatePhoneNumber = (phoneNumber) => {
-  const re = /^(\+254|254|0)[7]\d{8}$/;
+  const re = /^(2547\d{8}|2541\d{8}|07\d{8}|01\d{8})$/;
   return re.test(String(phoneNumber));
 };
+
 
 // Function to generate member number
 const generateMemberNumber = async () => {
