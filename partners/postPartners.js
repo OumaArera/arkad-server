@@ -12,14 +12,6 @@ const validateEmail = (email) => {
 router.post('/', async (req, res) => {
   const  { organizationName, email, contactNumber, website, location, reasonForPartnership }  = req.body;
 
-  if (!iv || !ciphertext) {
-    return res.status(400).json({
-      success: false,
-      message: 'Invalid data. Missing required fields',
-      statusCode: 400,
-    });
-  }
-
   try {
     // Ensure all required fields are present
     if (!organizationName || !email || !contactNumber || !website || !location || !reasonForPartnership) {
