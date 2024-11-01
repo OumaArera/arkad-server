@@ -1,6 +1,5 @@
 const express = require('express');
 const db = require('../models');
-const CryptoJS = require('crypto-js');
 require('dotenv').config();
 
 const router = express.Router();
@@ -56,7 +55,6 @@ router.post('/', async (req, res) => {
       organizationName: orgNameLowerCase, 
       email, 
       contactNumber, 
-      organizationType, 
       website, 
       location, 
       reasonForPartnership 
