@@ -1,22 +1,8 @@
 const express = require('express');
 const db = require('../models');
-const CryptoJS = require('crypto-js');
 require('dotenv').config();
 
 const router = express.Router();
-
-const encryptData = (data, key) => {
-  const iv = CryptoJS.lib.WordArray.random(16);
-  const encrypted = CryptoJS.AES.encrypt(JSON.stringify(data), CryptoJS.enc.Utf8.parse(key), {
-    iv: iv,
-    padding: CryptoJS.pad.Pkcs7,
-    mode: CryptoJS.mode.CBC,
-  });
-  return {
-    iv: iv.toString(CryptoJS.enc.Hex),
-    ciphertext: encrypted.toString(),
-  };
-};
 
 router.get('/', async (req, res) => {
   try {
@@ -38,11 +24,9 @@ router.get('/', async (req, res) => {
       throw new Error('Missing required keys');
     }
 
-    const encryptedAchievements = encryptData(achievementsWithFullImageUrls, key);
-
     return res.status(200).json({
       success: true,
-      data: encryptedAchievements,
+      data: achievementsWithFullImageUrls,
       statusCode: 200,
     });
   } catch (error) {
