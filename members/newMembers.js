@@ -42,7 +42,6 @@ router.post("/", async (req, res) => {
   const { fullName, email, phoneNumber } = req.body;
 
   try {
-
     // Validate email
     if (!email || !validateEmail(email)) {
       return res.status(400).json({

@@ -11,7 +11,7 @@ const validateEmail = (email) => {
 };
 
 router.post('/', async (req, res) => {
-  const { iv, ciphertext } = req.body;
+  const  { organizationName, email, contactNumber, website, location, reasonForPartnership }  = req.body;
 
   if (!iv || !ciphertext) {
     return res.status(400).json({
@@ -22,24 +22,8 @@ router.post('/', async (req, res) => {
   }
 
   try {
-    const key = process.env.ENCRYPTION_KEY;
-    if (!key) {
-      throw new Error('Missing required keys');
-    }
-
-    const decryptedBytes = CryptoJS.AES.decrypt(ciphertext, CryptoJS.enc.Utf8.parse(key), {
-      iv: CryptoJS.enc.Hex.parse(iv),
-      padding: CryptoJS.pad.Pkcs7,
-      mode: CryptoJS.mode.CBC,
-    });
-    let decryptedData = decryptedBytes.toString(CryptoJS.enc.Utf8);
-    decryptedData = decryptedData.replace(/\0+$/, '');
-
-    const userData = JSON.parse(decryptedData);
-    let { organizationName, email, contactNumber, organizationType, website, location, reasonForPartnership } = userData;
-
     // Ensure all required fields are present
-    if (!organizationName || !email || !contactNumber || !organizationType || !website || !location || !reasonForPartnership) {
+    if (!organizationName || !email || !contactNumber || !website || !location || !reasonForPartnership) {
       return res.status(400).json({
         success: false,
         message: 'Missing or invalid required fields',
