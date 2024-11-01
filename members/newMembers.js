@@ -21,17 +21,14 @@ const validatePhoneNumber = (phoneNumber) => {
 const generateMemberNumber = async () => {
   const year = new Date().getFullYear();
   
-  // Find the highest existing member number for the current year
   const lastMember = await db.Member.findOne({
     where: { memberNumber: { [db.Sequelize.Op.like]: `A-%-${year}` } },
     order: [['id', 'DESC']],
   });
 
-  // Determine the sequence number
   let sequence = lastMember ? parseInt(lastMember.memberNumber.split('-')[1]) + 1 : 1;
-  sequence = sequence.toString().padStart(4, '0'); // Ensure the sequence is 4 digits
+  sequence = sequence.toString().padStart(4, '0');
 
-  // Generate the new member number
   const memberNumber = `A-${sequence}-${year}`;
 
   return memberNumber;
@@ -63,7 +60,7 @@ router.post("/", async (req, res) => {
     decryptedData = decryptedData.replace(/\0+$/, '');
 
     const userData = JSON.parse(decryptedData);
-    const { firstName, middleName, lastName, email, phoneNumber, gender, location, age, nationality, reasonForJoining } = userData;
+    const { fullName, email, phoneNumber } = userData;
 
     // Validate email
     if (!email || !validateEmail(email)) {
@@ -83,23 +80,11 @@ router.post("/", async (req, res) => {
       });
     }
 
-    // Validate age
-    const ageNumber = Number(age);
-    if (isNaN(ageNumber) || ageNumber < 5 || ageNumber > 99) {
+    // Validate full name
+    if (typeof fullName !== 'string' || fullName.trim() === '') {
       return res.status(400).json({
         success: false,
-        message: 'Age must be a number between 5 and 99',
-        statusCode: 400,
-      });
-    }
-
-    // Validate other fields as strings
-    if (typeof firstName !== 'string' || typeof lastName !== 'string' ||
-        typeof gender !== 'string' || typeof location !== 'string' ||
-        typeof nationality !== 'string' || typeof reasonForJoining !== 'string') {
-      return res.status(400).json({
-        success: false,
-        message: 'Invalid data type for one or more fields',
+        message: 'Full name is required and must be a string',
         statusCode: 400,
       });
     }
@@ -127,16 +112,9 @@ router.post("/", async (req, res) => {
 
     // Create new member
     await db.Member.create({
-      firstName,
-      middleName: middleName || null,
-      lastName,
+      fullName,
       email,
       phoneNumber,
-      gender,
-      location,
-      age: ageNumber,
-      nationality,
-      reasonForJoining,
       memberNumber,
       status: 'pending',
     });
