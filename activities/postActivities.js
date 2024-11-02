@@ -12,7 +12,7 @@ const router = express.Router();
 const validateData = (userData) => {
   const { userId, title, venue, date } = userData;
 
-  if (!userId || typeof userId !== 'number') {
+  if (!userId || typeof parseInt(userId) !== 'number') {
     return { valid: false, message: 'Invalid userId' };
   }
 
