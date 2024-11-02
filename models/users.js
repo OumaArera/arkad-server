@@ -25,7 +25,7 @@ module.exports = (sequelize, DataTypes) => {
     role: {
       type: DataTypes.STRING,
       allowNull: false,
-      defaultValue: 'admin', // Setting default value to 'admin'
+      defaultValue: 'admin', 
     },
   }, {
     timestamps: true,
