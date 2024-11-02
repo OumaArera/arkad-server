@@ -1,7 +1,7 @@
 const express = require('express');
 const db = require('../models');
 const CryptoJS = require('crypto-js');
-const nodemailer = require('nodemailer'); // Ensure nodemailer is imported
+const nodemailer = require('nodemailer');
 require('dotenv').config();
 
 const router = express.Router();
@@ -12,41 +12,41 @@ const validateEmail = (email) => {
 };
 
 const sendEmail = async (email, fullName, activity) => {
-    const transporter = nodemailer.createTransport({
-        host: process.env.SMTP_HOST,
-        port: process.env.SMTP_PORT,
-        secure: false,
-        auth: {
-            user: process.env.SMTP_USER,
-            pass: process.env.SMTP_PASSWORD,
-        },
-    });
+  const transporter = nodemailer.createTransport({
+    host: process.env.SMTP_HOST,
+    port: process.env.SMTP_PORT,
+    secure: false,
+    auth: {
+      user: process.env.SMTP_USER,
+      pass: process.env.SMTP_PASSWORD,
+    },
+  });
 
-    const mailOptions = {
-        from: `"Arkad Family" <${process.env.SMTP_USER}>`,
-        to: email,
-        subject: 'Thank You for Your Interest in Volunteering!',
-        html: `
-            <p>Dear ${fullName},</p>
-            <br />
-            <p>Thank you for expressing your interest in volunteering for <strong>${activity}</strong> with The Arkad Family. </p>
-            <p>We have received your request and truly appreciate your willingness to contribute.</p>
-            <p>Our team will be in touch with you soon to share more details on how you can get involved in this exciting initiative.</p>
-            <p>In the meantime, if you have any questions or would like to learn more about us, feel free to visit our website or connect with us on social media.</p>
-            <p>We look forward to working with you!</p>
-            <br />
-            <p>Best regards,<br/>The Arkad Family Team</p>
-            <p>| <a href="https://arkadsmp.co.ke">Visit our website</a> |</p>
-            <p>| <a href="https://facebook.com/arkadsic">Facebook</a> |</p>
-            <p>| <a href="https://tiktok.com/@Arkad_SMP">TikTok</a> |</p>
-            <p>| <a href="https://x.com/ArkadSMP">X(Twitter)</a> |</p>
-            <p>| <a href="https://linkedin.com/company/arkadsmp">LinkedIn</a> |</p>
-            <p>| <a href="https://instagram.com/arkad_sic">Instagram</a> |</p>
-            <p>| <a href="https://youtube.com/@arkadfamilysic">YouTube</a> |</p>
-        `,
-    };
+  const mailOptions = {
+    from: `"Arkad Family" <${process.env.SMTP_USER}>`,
+    to: email,
+    subject: 'Thank You for Your Interest in Volunteering!',
+    html: `
+      <p>Dear ${fullName},</p>
+      <br />
+      <p>Thank you for expressing your interest in volunteering for <strong>${activity}</strong> with The Arkad Family.</p>
+      <p>We have received your request and truly appreciate your willingness to contribute.</p>
+      <p>Our team will be in touch with you soon to share more details on how you can get involved in this exciting initiative.</p>
+      <p>In the meantime, if you have any questions or would like to learn more about us, feel free to visit our website or connect with us on social media.</p>
+      <p>We look forward to working with you!</p>
+      <br />
+      <p>Best regards,<br/>The Arkad Family Team</p>
+      <p>| <a href="https://arkadsmp.co.ke">Visit our website</a> |</p>
+      <p>| <a href="https://facebook.com/arkadsic">Facebook</a> |</p>
+      <p>| <a href="https://tiktok.com/@Arkad_SMP">TikTok</a> |</p>
+      <p>| <a href="https://x.com/ArkadSMP">X(Twitter)</a> |</p>
+      <p>| <a href="https://linkedin.com/company/arkadsmp">LinkedIn</a> |</p>
+      <p>| <a href="https://instagram.com/arkad_sic">Instagram</a> |</p>
+      <p>| <a href="https://youtube.com/@arkadfamilysic">YouTube</a> |</p>
+    `,
+  };
 
-    return transporter.sendMail(mailOptions);
+  return transporter.sendMail(mailOptions);
 };
 
 router.post('/', async (req, res) => {
@@ -71,18 +71,6 @@ router.post('/', async (req, res) => {
       });
     }
 
-    // Find the activity
-    const activity = await db.Activity.findOne({ where: { id: activityId } });
-
-    // Check if the activity exists
-    if (!activity) {
-      return res.status(400).json({
-        success: false,
-        message: 'Activity does not exist',
-        statusCode: 400,
-      });
-    }
-
     // Check if the user already submitted a request for this activity
     const volunt = await db.Volunteer.findOne({
       where: {
@@ -99,6 +87,16 @@ router.post('/', async (req, res) => {
       });
     }
 
+    // Fetch the activity to ensure it exists and to retrieve its details
+    const activity = await db.Activity.findByPk(activityId);
+    if (!activity) {
+      return res.status(404).json({
+        success: false,
+        message: 'Activity not found',
+        statusCode: 404,
+      });
+    }
+
     // Check if the activity date has already passed
     const currentDate = new Date();
     if (new Date(activity.date) < currentDate) {
@@ -111,7 +109,7 @@ router.post('/', async (req, res) => {
 
     // Proceed to create a new volunteer entry
     await db.Volunteer.create({ fullName, email, phoneNumber, activityId });
-    await sendEmail(email, fullName, activity);
+    await sendEmail(email, fullName, activity.title); // Change `activity` to `activity.name` or whatever relevant field you want to send in the email
 
     return res.status(201).json({
       message: 'Request sent successfully',
@@ -120,10 +118,10 @@ router.post('/', async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Error:', error);
+    console.error('Error:', error); // Log the error to console for debugging
     return res.status(500).json({
       success: false,
-      message: 'Internal server error' error,
+      message: `Internal server error: ${error.message || error}`,
       statusCode: 500,
     });
   }
