@@ -123,7 +123,7 @@ router.post('/', async (req, res) => {
     console.error('Error:', error);
     return res.status(500).json({
       success: false,
-      message: 'Internal server error',
+      message: 'Internal server error' error,
       statusCode: 500,
     });
   }
