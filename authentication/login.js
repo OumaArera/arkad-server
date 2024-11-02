@@ -77,8 +77,9 @@ router.post('/', async (req, res) => {
         statusCode: 401
       });
     }
+    const name = `${user.firstName} ${user.lastName}`;
 
-    const token = jwt.sign({ id: user.id, name: user.firstName, role: user.role, username: user.username }, process.env.JWT_SECRET_KEY, {
+    const token = jwt.sign({ id: user.id, name: name, role: user.role, username: user.username }, process.env.JWT_SECRET_KEY, {
       expiresIn: '1d',
     });
 
