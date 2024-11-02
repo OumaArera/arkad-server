@@ -1,5 +1,5 @@
 module.exports = (sequelize, DataTypes) => {
-  const Volunteer = sequelize.define('Volunteer', {
+  const Voluntary = sequelize.define('Voluntary', { // Renamed to Voluntary
     fullName: {
       type: DataTypes.STRING,
       allowNull: false,
@@ -17,7 +17,7 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: 'Activities', 
+        model: 'Activities', // Ensure this model name matches the actual table name in your database
         key: 'id',
       },
       onDelete: 'CASCADE',
@@ -26,12 +26,12 @@ module.exports = (sequelize, DataTypes) => {
     timestamps: true,
   });
 
-  Volunteer.associate = (models) => {
-    Volunteer.belongsTo(models.Activity, { 
+  Voluntary.associate = (models) => {
+    Voluntary.belongsTo(models.Activity, { 
       foreignKey: 'activityId', 
       as: 'activity' 
     });
   };
 
-  return Volunteer;
+  return Voluntary;
 };
