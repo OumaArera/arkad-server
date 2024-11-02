@@ -1,6 +1,5 @@
 const express = require('express');
 const db = require('../models');
-const CryptoJS = require('crypto-js');
 const authenticateToken = require("../authentication/authenticateToken");
 const path = require('path');
 const fs = require('fs');
@@ -24,16 +23,17 @@ const storage = multer.diskStorage({
 
 const upload = multer({
   storage: storage,
-  limits: { fileSize: 10 * 1024 * 1024 } 
+  limits: { fileSize: 10 * 1024 * 1024 } // 10MB limit per file
 });
 
 // PUT route to update media details
 router.put('/:id', authenticateToken, upload.array('images', 10), async (req, res) => {
   const mediaId = parseInt(req.params.id, 10);
-  const { iv, ciphertext } = req.body;
+  const { description } = req.body;  // Directly access description from the body
   const files = req.files;
 
-  if (!iv && !ciphertext && !files) {
+  // Check if there's a description or files to update
+  if (!description && !files) {
     return res.status(400).json({
       success: false,
       message: 'Invalid data. Missing required fields',
@@ -42,20 +42,6 @@ router.put('/:id', authenticateToken, upload.array('images', 10), async (req, re
   }
 
   try {
-    let decryptedData = {};
-    if (ciphertext && iv) {
-      const decryptedBytes = CryptoJS.AES.decrypt(ciphertext, CryptoJS.enc.Utf8.parse(key), {
-        iv: CryptoJS.enc.Hex.parse(iv),
-        padding: CryptoJS.pad.Pkcs7,
-        mode: CryptoJS.mode.CBC,
-      });
-
-      let decrypted = decryptedBytes.toString(CryptoJS.enc.Utf8);
-      decrypted = decrypted.replace(/\0+$/, '');
-      decryptedData = JSON.parse(decrypted);
-    }
-
-    const { description } = decryptedData;
     const existingMedia = await db.Media.findByPk(mediaId);
 
     if (!existingMedia) {

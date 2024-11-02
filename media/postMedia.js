@@ -1,6 +1,5 @@
 const express = require('express');
 const db = require('../models');
-const CryptoJS = require('crypto-js');
 const authenticateToken = require("../authentication/authenticateToken");
 const path = require('path');
 const fs = require('fs');
@@ -29,45 +28,19 @@ const upload = multer({
 
 // POST route to handle media uploads
 router.post('/', authenticateToken, upload.array('images', 10), async (req, res) => {
-  const { iv, ciphertext } = req.body;
+  const { userId, description } = req.body;  // Directly access userId and description
   const files = req.files;
 
-  if (!iv || !ciphertext) {
+  // Validate data
+  if (!userId || !description) {
     return res.status(400).json({
       success: false,
-      message: 'Invalid data. Missing required fields',
+      message: 'Missing or invalid data',
       statusCode: 400,
     });
   }
 
   try {
-    const key = process.env.ENCRYPTION_KEY;
-    if (!key) {
-      throw new Error('Missing required encryption key');
-    }
-
-    // Decrypting the data
-    const decryptedBytes = CryptoJS.AES.decrypt(ciphertext, CryptoJS.enc.Utf8.parse(key), {
-      iv: CryptoJS.enc.Hex.parse(iv),
-      padding: CryptoJS.pad.Pkcs7,
-      mode: CryptoJS.mode.CBC,
-    });
-
-    let decryptedData = decryptedBytes.toString(CryptoJS.enc.Utf8);
-    decryptedData = decryptedData.replace(/\0+$/, '');
-
-    const userData = JSON.parse(decryptedData);
-    const { userId, description } = userData;
-
-    // Validate data
-    if (!userId || !description) {
-      return res.status(400).json({
-        success: false,
-        message: 'Missing or invalid data',
-        statusCode: 400,
-      });
-    }
-
     // Prepare array to store image paths
     let mediaUrls = [];
 

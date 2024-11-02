@@ -1,6 +1,5 @@
 const express = require('express');
 const db = require('../models');
-const CryptoJS = require('crypto-js');
 const authenticateToken = require("../authentication/authenticateToken");
 const path = require('path');
 const fs = require('fs');
@@ -45,11 +44,11 @@ const validateUpdateData = (leadershipData) => {
 // PUT route to update an existing leadership entry
 router.put('/:id', authenticateToken, upload.single('image'), async (req, res) => {
   const leadershipId = req.params.id;
-  const { iv, ciphertext } = req.body;
+  const { name, role } = req.body; // Access data directly from the body
   const file = req.file;
 
   // Validate that at least one field is present in the request
-  if (!iv && !ciphertext && !file) {
+  if (!name && !role && !file) {
     return res.status(400).json({
       success: false,
       message: 'No data provided for update',
@@ -58,27 +57,6 @@ router.put('/:id', authenticateToken, upload.single('image'), async (req, res) =
   }
 
   try {
-    const key = process.env.ENCRYPTION_KEY;
-    if (!key) {
-      throw new Error('Missing required encryption key');
-    }
-
-    // Decrypting the data if available
-    let decryptedData = {};
-    if (ciphertext && iv) {
-      const decryptedBytes = CryptoJS.AES.decrypt(ciphertext, CryptoJS.enc.Utf8.parse(key), {
-        iv: CryptoJS.enc.Hex.parse(iv),
-        padding: CryptoJS.pad.Pkcs7,
-        mode: CryptoJS.mode.CBC,
-      });
-
-      let decrypted = decryptedBytes.toString(CryptoJS.enc.Utf8);
-      decrypted = decrypted.replace(/\0+$/, '');
-      decryptedData = JSON.parse(decrypted);
-    }
-
-    const { name, role } = decryptedData;
-
     // Validate the data (only for fields that are provided)
     const validation = validateUpdateData({ name, role });
     if (!validation.valid) {

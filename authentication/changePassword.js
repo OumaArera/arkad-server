@@ -20,8 +20,10 @@ router.put('/', authenticateToken, async (req, res) => {
 
   try {
     const key = process.env.ENCRYPTION_KEY;
-    if (!key) {
-      throw new Error('Missing required keys');
+    const saltKey = process.env.SALTING_KEY;
+
+    if (!key || !saltKey) {
+      throw new Error('Missing encryption or salting keys');
     }
 
     // Decrypt the incoming data
@@ -34,12 +36,12 @@ router.put('/', authenticateToken, async (req, res) => {
     decryptedData = decryptedData.replace(/\0+$/, '');  // Remove trailing null bytes
 
     const userData = JSON.parse(decryptedData);
-    const { username, password } = userData;
+    const { username, oldPassword, newPassword } = userData;
 
-    if (!username || !password) {
+    if (!username || !oldPassword || !newPassword) {
       return res.status(400).json({
         success: false,
-        message: 'Username and password are required',
+        message: 'Username, old password, and new password are required',
         statusCode: 400,
       });
     }
@@ -54,17 +56,24 @@ router.put('/', authenticateToken, async (req, res) => {
       });
     }
 
-    const saltKey = process.env.SALTING_KEY;
-    if (!saltKey) {
-      throw new Error('Missing required keys');
+    // Verify the old password
+    const saltedOldPassword = oldPassword + saltKey;
+    const isOldPasswordValid = await bcrypt.compare(saltedOldPassword, user.password);
+    
+    if (!isOldPasswordValid) {
+      return res.status(401).json({
+        success: false,
+        message: 'Old password is incorrect',
+        statusCode: 401,
+      });
     }
 
     // Salt and hash the new password
-    const saltedPassword = password + saltKey;
-    const hashedPassword = await bcrypt.hash(saltedPassword, 10);
+    const saltedNewPassword = newPassword + saltKey;
+    const hashedNewPassword = await bcrypt.hash(saltedNewPassword, 10);
 
     // Update the user's password
-    user.password = hashedPassword;
+    user.password = hashedNewPassword;
     await user.save();
 
     return res.status(200).json({

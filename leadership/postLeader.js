@@ -1,6 +1,5 @@
 const express = require('express');
 const db = require('../models');
-const CryptoJS = require('crypto-js');
 const authenticateToken = require("../authentication/authenticateToken");
 const path = require('path');
 const fs = require('fs');
@@ -43,15 +42,16 @@ const storage = multer.diskStorage({
 
 const upload = multer({
   storage: storage,
-  limits: { fileSize: 10 * 1024 * 1024 } 
+  limits: { fileSize: 10 * 1024 * 1024 } // 10MB limit per file
 });
 
 // POST route to create a new achievement
 router.post('/', authenticateToken, upload.single('image'), async (req, res) => {
-  const { iv, ciphertext } = req.body;
+  const { userId, name, role } = req.body;  // Access data directly from the body
   const file = req.file;
 
-  if (!iv || !ciphertext) {
+  // Check for required fields
+  if (!userId || !name || !role) {
     return res.status(400).json({
       success: false,
       message: 'Invalid data. Missing required fields',
@@ -60,24 +60,6 @@ router.post('/', authenticateToken, upload.single('image'), async (req, res) => 
   }
 
   try {
-    const key = process.env.ENCRYPTION_KEY;
-    if (!key) {
-      throw new Error('Missing required key');
-    }
-
-    // Decrypting the data
-    const decryptedBytes = CryptoJS.AES.decrypt(ciphertext, CryptoJS.enc.Utf8.parse(key), {
-      iv: CryptoJS.enc.Hex.parse(iv),
-      padding: CryptoJS.pad.Pkcs7,
-      mode: CryptoJS.mode.CBC,
-    });
-
-    let decryptedData = decryptedBytes.toString(CryptoJS.enc.Utf8);
-    decryptedData = decryptedData.replace(/\0+$/, '');
-
-    const userData = JSON.parse(decryptedData);
-    const { userId, name, role } = userData;
-
     // Validate the data
     const validation = validateData({ userId, name, role });
     if (!validation.valid) {

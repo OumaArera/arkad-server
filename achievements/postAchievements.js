@@ -1,6 +1,5 @@
 const express = require('express');
 const db = require('../models');
-const CryptoJS = require('crypto-js');
 const authenticateToken = require("../authentication/authenticateToken");
 const path = require('path');
 const fs = require('fs');
@@ -52,53 +51,27 @@ const upload = multer({
 
 // POST route to create a new achievement
 router.post('/', authenticateToken, upload.single('image'), async (req, res) => {
-  const { iv, ciphertext } = req.body;
+  const { userId, description, venue, date } = req.body;
   const file = req.file;
 
-  if (!iv || !ciphertext) {
+  // Validate the data
+  const validation = validateData({ userId, description, venue, date });
+  if (!validation.valid) {
     return res.status(400).json({
       success: false,
-      message: 'Invalid data. Missing required fields',
+      message: validation.message,
       statusCode: 400,
     });
   }
 
+  let imageUrl = null;
+
+  if (file) {
+    // Define the image URL path (relative to the public directory)
+    imageUrl = `/public/uploads/${file.filename}`;
+  }
+
   try {
-    const key = process.env.ENCRYPTION_KEY;
-    if (!key) {
-      throw new Error('Missing required key');
-    }
-
-    // Decrypting the data
-    const decryptedBytes = CryptoJS.AES.decrypt(ciphertext, CryptoJS.enc.Utf8.parse(key), {
-      iv: CryptoJS.enc.Hex.parse(iv),
-      padding: CryptoJS.pad.Pkcs7,
-      mode: CryptoJS.mode.CBC,
-    });
-
-    let decryptedData = decryptedBytes.toString(CryptoJS.enc.Utf8);
-    decryptedData = decryptedData.replace(/\0+$/, '');
-
-    const userData = JSON.parse(decryptedData);
-    const { userId, description, venue, date } = userData;
-
-    // Validate the data (this function can be defined separately)
-    const validation = validateData({ userId, description, venue, date });
-    if (!validation.valid) {
-      return res.status(400).json({
-        success: false,
-        message: validation.message,
-        statusCode: 400,
-      });
-    }
-
-    let imageUrl = null;
-
-    if (file) {
-      // Define the image URL path (relative to the public directory)
-      imageUrl = `/public/uploads/${file.filename}`;
-    }
-
     // Store data in the database with the image URL
     await db.Achievement.create({
       userId,
