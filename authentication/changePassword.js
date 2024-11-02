@@ -70,11 +70,10 @@ router.put('/', authenticateToken, async (req, res) => {
 
     // Salt and hash the new password
     const saltedNewPassword = newPassword + saltKey;
-    const hashedNewPassword = await bcrypt.hash(saltedNewPassword, 10);
+    const hashedPassword = await bcrypt.hash(saltedNewPassword, 10);
 
     // Update the user's password
-    user.password = hashedNewPassword;
-    await user.save();
+    await db.User.update({ password: hashedPassword }, { where: { username } });
 
     return res.status(200).json({
       success: true,
