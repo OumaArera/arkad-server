@@ -1,6 +1,7 @@
 const express = require('express');
 const db = require('../models');
 const CryptoJS = require('crypto-js');
+const nodemailer = require('nodemailer'); // Ensure nodemailer is imported
 require('dotenv').config();
 
 const router = express.Router();
@@ -41,8 +42,7 @@ const sendEmail = async (email, fullName, activity) => {
             <p>| <a href="https://x.com/ArkadSMP">X(Twitter)</a> |</p>
             <p>| <a href="https://linkedin.com/company/arkadsmp">LinkedIn</a> |</p>
             <p>| <a href="https://instagram.com/arkad_sic">Instagram</a> |</p>
-            <p>| <a href="ttps://youtube.com/@arkadfamilysic">YouTube</a> |</p>
-            
+            <p>| <a href="https://youtube.com/@arkadfamilysic">YouTube</a> |</p>
         `,
     };
 
@@ -50,35 +50,11 @@ const sendEmail = async (email, fullName, activity) => {
 };
 
 router.post('/', async (req, res) => {
-  const { iv, ciphertext } = req.body;
-
-  if (!iv || !ciphertext) {
-    return res.status(400).json({
-      success: false,
-      message: 'Invalid data. Missing required fields',
-      statusCode: 400,
-    });
-  }
+  const { fullName, phoneNumber, email, activityId } = req.body;
 
   try {
-    const key = process.env.ENCRYPTION_KEY;
-    if (!key) {
-      throw new Error('Missing required keys');
-    }
-
-    const decryptedBytes = CryptoJS.AES.decrypt(ciphertext, CryptoJS.enc.Utf8.parse(key), {
-      iv: CryptoJS.enc.Hex.parse(iv),
-      padding: CryptoJS.pad.Pkcs7,
-      mode: CryptoJS.mode.CBC,
-    });
-    let decryptedData = decryptedBytes.toString(CryptoJS.enc.Utf8);
-    decryptedData = decryptedData.replace(/\0+$/, '');
-
-    const userData = JSON.parse(decryptedData);
-    Object.entries(userData).forEach(([key, value]) => console.log(`${key} : ${value}`));
-    const { activityId, fullName, phoneNumber, email, location } = userData;
-
-    if (!fullName || !email || !phoneNumber || !location || !activityId) {
+    // Validate required fields
+    if (!fullName || !email || !phoneNumber || !activityId) {
       return res.status(400).json({
         success: false,
         message: 'Missing or invalid required fields',
@@ -86,22 +62,13 @@ router.post('/', async (req, res) => {
       });
     };
 
+    // Validate email format
     if (!validateEmail(email)) {
       return res.status(400).json({
         success: false,
         message: 'Invalid email format',
         statusCode: 400,
       });
-    }
-
-    const volunt = await db.Volunteer.findOne({ where:{ email } });
-
-    if(volunt){
-      return res.status(400).json({
-        success: false,
-        message: "You already submitted request to participate to this event",
-        statusCode: 400
-      })
     }
 
     // Find the activity
@@ -116,6 +83,22 @@ router.post('/', async (req, res) => {
       });
     }
 
+    // Check if the user already submitted a request for this activity
+    const volunt = await db.Volunteer.findOne({
+      where: {
+        email,
+        activityId, // Check both email and activityId
+      },
+    });
+
+    if (volunt) {
+      return res.status(400).json({
+        success: false,
+        message: "You already submitted a request to participate in this event",
+        statusCode: 400
+      });
+    }
+
     // Check if the activity date has already passed
     const currentDate = new Date();
     if (new Date(activity.date) < currentDate) {
@@ -127,7 +110,7 @@ router.post('/', async (req, res) => {
     }
 
     // Proceed to create a new volunteer entry
-    await db.Volunteer.create({ fullName, email, phoneNumber, location, activityId });
+    await db.Volunteer.create({ fullName, email, phoneNumber, activityId });
     await sendEmail(email, fullName, activity);
 
     return res.status(201).json({
