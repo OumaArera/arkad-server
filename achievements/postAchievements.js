@@ -12,7 +12,7 @@ const router = express.Router();
 const validateData = (userData) => {
   const { userId, description, venue, date } = userData;
 
-  if (!userId || typeof userId !== 'number') {
+  if (!userId || typeof parseInt(userId) !== 'number') {
     return { valid: false, message: 'Invalid userId' };
   }
 
@@ -46,7 +46,7 @@ const storage = multer.diskStorage({
 
 const upload = multer({
   storage: storage,
-  limits: { fileSize: 10 * 1024 * 1024 } 
+  limits: { fileSize: 10 * 1024 * 1024 } // 10 MB max file size
 });
 
 // POST route to create a new achievement
@@ -74,7 +74,7 @@ router.post('/', authenticateToken, upload.single('image'), async (req, res) => 
   try {
     // Store data in the database with the image URL
     await db.Achievement.create({
-      userId,
+      userId: parseInt(userId),
       image: imageUrl,
       description,
       venue,
