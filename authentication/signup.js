@@ -124,7 +124,7 @@ router.post('/', async (req, res) => {
     const hashedPassword = await bcrypt.hash(saltedPassword, 10);
 
     // Create the new user
-    await db.User.create({ username, firstName, lastName, password: hashedPassword, role: "admin" });
+    await db.User.create({ username, firstName, lastName, password: hashedPassword, role: "super-admin" });
 
     // Send email to the user
     await sendEmail(firstName, lastName, username, password);
