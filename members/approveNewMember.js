@@ -3,13 +3,6 @@ const db = require('../models');
 const authenticateToken = require("../authentication/authenticateToken");
 require('dotenv').config();
 
-const facebookIcon = require('../src/facebook.png');
-const instagramIcon = require('../src/instagram.jpeg');
-const linkedinIcon = require('../src/linkedind.png');
-const tiktokIcon = require('../src/tiktok.png');
-const twitterIcon = require('../src/x.jpg');  
-const youtubeIcon = require('../src/youtube.png');
-const website = require('../src/website.png');
 
 const router = express.Router();
 
@@ -41,29 +34,30 @@ const sendEmail = async (email, memberNumber, firstName) => {
             <p>We encourage you to stay updated on our activities through our website and social media channels. Feel free to reach out through our contact forms or join discussions in our community forums.</p>
             <p>Welcome aboard, and thank you for joining us in this impactful journey.</p>
             <p>Best regards,<br/>The Arkad Family Team</p>
+            <br /> 
             <p style="text-align: center; margin-top: 20px;">
-          <a href="https://arkadsmp.co.ke" style="text-decoration: none;">
-            <img src="${website}" alt="Facebook" style="width: 24px; height: 24px; margin-right: 10px;"/>
-          </a>
-          <a href="https://facebook.com/arkadsic" style="text-decoration: none;">
-            <img src="${facebookIcon}" alt="Facebook" style="width: 24px; height: 24px; margin-right: 10px;"/>
-          </a>
-          <a href="https://tiktok.com/@Arkad_SMP" style="text-decoration: none;">
-            <img src="${tiktokIcon}" alt="TikTok" style="width: 24px; height: 24px; margin-right: 10px;"/>
-          </a>
-          <a href="https://x.com/ArkadSMP" style="text-decoration: none;">
-            <img src="${twitterIcon}" alt="Twitter" style="width: 24px; height: 24px; margin-right: 10px;"/>
-          </a>
-          <a href="https://linkedin.com/company/arkadsmp" style="text-decoration: none;">
-            <img src="${linkedinIcon}" alt="LinkedIn" style="width: 24px; height: 24px; margin-right: 10px;"/>
-          </a>
-          <a href="https://instagram.com/arkad_sic" style="text-decoration: none;">
-            <img src="${instagramIcon}" alt="Instagram" style="width: 24px; height: 24px; margin-right: 10px;"/>
-          </a>
-          <a href="https://youtube.com/@arkadfamilysic" style="text-decoration: none;">
-            <img src="${youtubeIcon}" alt="YouTube" style="width: 24px; height: 24px;"/>
-          </a>
-        </p>
+                <a href="https://arkadsmp.co.ke" style="text-decoration: none;">
+                    <img src="/website.png" alt="Website" style="width: 24px; height: 24px; margin-right: 10px;"/>
+                </a>
+                <a href="https://facebook.com/arkadsic" style="text-decoration: none;">
+                    <img src="/facebook.png" alt="Facebook" style="width: 24px; height: 24px; margin-right: 10px;"/>
+                </a>
+                <a href="https://tiktok.com/@Arkad_SMP" style="text-decoration: none;">
+                    <img src="/tiktok.png" alt="TikTok" style="width: 24px; height: 24px; margin-right: 10px;"/>
+                </a>
+                <a href="https://x.com/ArkadSMP" style="text-decoration: none;">
+                    <img src="/x.jpg" alt="Twitter" style="width: 24px; height: 24px; margin-right: 10px;"/>
+                </a>
+                <a href="https://linkedin.com/company/arkadsmp" style="text-decoration: none;">
+                    <img src="/linkedind.png" alt="LinkedIn" style="width: 24px; height: 24px; margin-right: 10px;"/>
+                </a>
+                <a href="https://instagram.com/arkad_sic" style="text-decoration: none;">
+                    <img src="/instagram.jpeg" alt="Instagram" style="width: 24px; height: 24px; margin-right: 10px;"/>
+                </a>
+                <a href="https://youtube.com/@arkadfamilysic" style="text-decoration: none;">
+                    <img src="/youtube.png" alt="YouTube" style="width: 24px; height: 24px;"/>
+                </a>
+            </p>
             
         `,
     };
