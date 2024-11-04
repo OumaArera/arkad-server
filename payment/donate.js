@@ -1,6 +1,7 @@
 const express = require('express');
 const db = require('../models');
 const router = express.Router();
+const authenticateToken = require("../authentication/authenticateToken");
 require('dotenv').config();
 
 const validatePhoneNumber = (phone) => {
@@ -8,7 +9,7 @@ const validatePhoneNumber = (phone) => {
     return phoneRegex.test(phone);
 };
 
-router.post('/', async (req, res) => {
+router.post('/', authenticateToken,  async (req, res) => {
     const { fullName, phoneNumber, amount, mpesaReceiptNumber } = req.body;
 
     // Validate input fields

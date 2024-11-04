@@ -2,9 +2,10 @@ const express = require('express');
 const db = require('../models');
 const router = express.Router();
 const { Op } = require('sequelize');
+const authenticateToken = require("../authentication/authenticateToken");
 require('dotenv').config();
 
-router.get('/', async (req, res) => {
+router.get('/', authenticateToken, async (req, res) => {
     const { startDate, endDate } = req.query;
 
     // Validate date format (YYYY-MM-DD)
