@@ -8,7 +8,7 @@ router.get('/', authenticateToken, async (req, res) => {
   try {
     // Retrieve users without including the password field
     const users = await User.findAll({
-      attributes: ['id', 'firstName', 'lastName', 'username', 'role', 'createdAt', 'updatedAt']
+      attributes: ['id', 'firstName', 'lastName', 'username', 'status', 'role', 'createdAt', 'updatedAt']
     });
 
     // Structure the response with data and success keys

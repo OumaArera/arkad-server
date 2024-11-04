@@ -36,15 +36,7 @@ router.post('/', async (req, res) => {
     const userData = JSON.parse(decryptedData);
     const { username, password } = userData;
 
-    if (!username) {
-      return res.status(400).json({
-        success: false,
-        message: 'Username or password is incorrect',
-        statusCode: 400
-      });
-    }
-
-    if (!password) {
+    if (!username || !password) {
       return res.status(400).json({
         success: false,
         message: 'Username or password is incorrect',
@@ -59,6 +51,15 @@ router.post('/', async (req, res) => {
         success: false,
         message: 'Username or password is incorrect',
         statusCode: 401
+      });
+    }
+
+    // Check if user status is active
+    if (user.status !== 'active') {
+      return res.status(403).json({
+        success: false,
+        message: 'Your account is not active. Please consult the system administrator.',
+        statusCode: 403
       });
     }
 
@@ -77,11 +78,14 @@ router.post('/', async (req, res) => {
         statusCode: 401
       });
     }
+
     const name = `${user.firstName} ${user.lastName}`;
 
-    const token = jwt.sign({ id: user.id, name: name, role: user.role, username: user.username }, process.env.JWT_SECRET_KEY, {
-      expiresIn: '1d',
-    });
+    const token = jwt.sign(
+      { id: user.id, name: name, role: user.role, username: user.username },
+      process.env.JWT_SECRET_KEY,
+      { expiresIn: '1d' }
+    );
 
     return res.status(200).json({
       accessToken: token,
@@ -99,3 +103,4 @@ router.post('/', async (req, res) => {
 });
 
 module.exports = router;
+

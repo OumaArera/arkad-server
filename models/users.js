@@ -27,6 +27,11 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       defaultValue: 'admin', 
     },
+    status: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      defaultValue: 'active',  
+    },
   }, {
     timestamps: true,
   });
