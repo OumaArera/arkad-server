@@ -12,13 +12,11 @@ const validateEmail = (email) => {
   return re.test(String(email).toLowerCase());
 };
 
-// Generate a random password with the required format
 const generateRandomPassword = () => {
   const uppercase = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
   const lowercase = 'abcdefghijklmnopqrstuvwxyz';
   const numbers = '0123456789';
   const specialChars = '!@#$%^&*?+=';
-
   const allChars = uppercase + lowercase + numbers + specialChars;
   let password = '';
   password += uppercase[Math.floor(Math.random() * uppercase.length)];
@@ -28,7 +26,6 @@ const generateRandomPassword = () => {
   while (password.length < 9) {
     password += allChars[Math.floor(Math.random() * allChars.length)];
   }
-
   return password.split('').sort(() => 0.5 - Math.random()).join('');
 };
 
@@ -61,7 +58,7 @@ const sendEmail = async (firstName, lastName, username, password) => {
       <p>| <a href="https://x.com/ArkadSMP">X(Twitter)</a> |</p>
       <p>| <a href="https://linkedin.com/company/arkadsmp">LinkedIn</a> |</p>
       <p>| <a href="https://instagram.com/arkad_sic">Instagram</a> |</p>
-      <p>| <a href="ttps://youtube.com/@arkadfamilysic">YouTube</a> |</p>
+      <p>| <a href="https://youtube.com/@arkadfamilysic">YouTube</a> |</p>
     `,
   };
 
@@ -94,24 +91,35 @@ router.post('/', async (req, res) => {
     decryptedData = decryptedData.replace(/\0+$/, '');
 
     const userData = JSON.parse(decryptedData);
-    const { username, firstName, lastName } = userData;
+    const { username, firstName, lastName, role } = userData;
 
+    // Validate email format
     if (!username || !validateEmail(username)) {
       return res.status(400).json({
         success: false,
         message: 'Invalid email format',
         statusCode: 400,
       });
-    };
+    }
 
+    // Validate role
+    const validRoles = ['admin', 'super-admin'];
+    if (!validRoles.includes(role)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid role. Role must be either "admin" or "super-admin".',
+        statusCode: 400,
+      });
+    }
+
+    // Check for existing user
     const user = await db.User.findOne({ where: { username } });
-
-    if (user){
+    if (user) {
       return res.status(409).json({
         success: false,
-        message: 'Username already exist',
-        statusCode: 409
-      })
+        message: 'Username already exists',
+        statusCode: 409,
+      });
     }
 
     const saltKey = process.env.SALTING_KEY;
@@ -123,8 +131,8 @@ router.post('/', async (req, res) => {
     const saltedPassword = password + saltKey;
     const hashedPassword = await bcrypt.hash(saltedPassword, 10);
 
-    // Create the new user
-    await db.User.create({ username, firstName, lastName, password: hashedPassword, role: "super-admin" });
+    // Create the new user with the provided role
+    await db.User.create({ username, firstName, lastName, password: hashedPassword, role });
 
     // Send email to the user
     await sendEmail(firstName, lastName, username, password);
@@ -149,6 +157,5 @@ router.post('/', async (req, res) => {
     });
   }
 });
-
 
 module.exports = router;
