@@ -1,16 +1,27 @@
-// routes/users.js
 const express = require('express');
 const router = express.Router();
-const { User } = require('../models'); 
+const { User } = require('../models');
+const authenticateToken = require("../authentication/authenticateToken");
 
 // GET /users endpoint to retrieve all users
-router.get('/', async (req, res) => {
+router.get('/', authenticateToken, async (req, res) => {
   try {
-    const users = await User.findAll(); 
-    res.status(200).json(users);
+    // Retrieve users without including the password field
+    const users = await User.findAll({
+      attributes: ['id', 'firstName', 'lastName', 'username', 'role', 'createdAt', 'updatedAt']
+    });
+
+    // Structure the response with data and success keys
+    res.status(200).json({
+      success: true,
+      data: users
+    });
   } catch (error) {
     console.error('Error fetching users:', error);
-    res.status(500).json({ error: 'An error occurred while fetching users' });
+    res.status(500).json({ 
+      success: false, 
+      error: 'An error occurred while fetching users' 
+    });
   }
 });
 
