@@ -21,6 +21,7 @@ app.use('/public', express.static(path.join(__dirname, 'public')));
 
 // Define routes
 app.use('/users/users', require('./authentication/getUsers'));
+app.use('/users/users', require('./authentication/removeUser'));
 app.use('/users/signup', require('./authentication/signup'));
 app.use('/users/login', require('./authentication/login'));
 app.use('/users/reset-password', require('./authentication/forgotPassword'));
