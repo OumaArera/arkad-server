@@ -1,5 +1,5 @@
 module.exports = (sequelize, DataTypes) => {
-    const Transaction = sequelize.define('Transaction', {
+    const Donation = sequelize.define('Donation', {
       id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
@@ -10,10 +10,6 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
       },
       fullName: {
-        type: DataTypes.STRING,
-        allowNull: false,
-      },
-      email: {
         type: DataTypes.STRING,
         allowNull: false,
       },
@@ -28,16 +24,11 @@ module.exports = (sequelize, DataTypes) => {
       mpesaReceiptNumber: {
         type: DataTypes.STRING,
         allowNull: true,
-      },
-      success:{
-        type: DataTypes.BOOLEAN,
-        allowNull: false,
-        defaultValue: false,
       }
     }, {
       timestamps: true,
     });
   
-    return Transaction;
+    return Donation;
   };
   

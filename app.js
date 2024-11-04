@@ -55,7 +55,7 @@ app.use("/users/leaders", require("./leadership/putLeaders"));
 app.use("/users/leaders", require("./leadership/removeLeader"));
 app.use("/users/volunteer", require("./volunteer/createVolunteer"));
 app.use("/users/volunteer", require("./volunteer/getVolunteers"));
-app.use("/users/donate", require("./payment/donate"));
+app.use("/users/donations", require("./payment/donate"));
 app.use("/users/donations", require("./payment/getDonations"));
 app.use("/users/validate", require("./payment/validate"));
 app.use("/users/delete-all-members", require("./members/remove"));

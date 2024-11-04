@@ -17,7 +17,7 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: 'Activities', // Ensure this model name matches the actual table name in your database
+        model: 'Activities', 
         key: 'id',
       },
       onDelete: 'CASCADE',

@@ -1,96 +1,44 @@
 const express = require('express');
-const { Op } = require('sequelize'); 
-const CryptoJS = require('crypto-js');
-const authenticateToken = require("../authentication/authenticateToken");
 const db = require('../models');
+const router = express.Router();
+const { Op } = require('sequelize');
 require('dotenv').config();
 
-const router = express.Router();
+router.get('/', async (req, res) => {
+    const { startDate, endDate } = req.query;
 
-const encryptData = (data, key) => {
-    const iv = CryptoJS.lib.WordArray.random(16);
-    const encrypted = CryptoJS.AES.encrypt(JSON.stringify(data), CryptoJS.enc.Utf8.parse(key), {
-      iv: iv,
-      padding: CryptoJS.pad.Pkcs7,
-      mode: CryptoJS.mode.CBC,
-    });
-    return {
-      iv: iv.toString(CryptoJS.enc.Hex),
-      ciphertext: encrypted.toString(),
-    };
-  };
-
-router.post('/transactions', authenticateToken, async (req, res) => {
-    const { iv, ciphertext } = req.body;
-
-    if (!iv || !ciphertext) {
+    // Validate date format (YYYY-MM-DD)
+    const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+    if (!startDate || !endDate || !dateRegex.test(startDate) || !dateRegex.test(endDate)) {
         return res.status(400).json({
-        success: false,
-        message: 'Invalid data. Missing required fields',
-        statusCode: 400,
+            success: false,
+            message: 'Invalid date format. Start date and end date must be in YYYY-MM-DD format.',
+            statusCode: 400,
         });
     }
 
-
     try {
-        const key = process.env.ENCRYPTION_KEY;
-        if (!key) {
-        throw new Error('Missing required keys');
-        }
-
-        const decryptedBytes = CryptoJS.AES.decrypt(ciphertext, CryptoJS.enc.Utf8.parse(key), {
-        iv: CryptoJS.enc.Hex.parse(iv),
-        padding: CryptoJS.pad.Pkcs7,
-        mode: CryptoJS.mode.CBC,
-        });
-        let decryptedData = decryptedBytes.toString(CryptoJS.enc.Utf8);
-        decryptedData = decryptedData.replace(/\0+$/, '');
-
-        const userData = JSON.parse(decryptedData);
-        Object.entries(userData).forEach(([key, value]) => console.log(`${key} : ${value}`));
-        const { start, end } = userData;
-
-        if (!start || !end) {
-            return res.status(400).json({
-                message: "Invalid data. Missing required fields",
-                success: false,
-                statusCode: 400
-            });
-        }
-
+        // Query the database for transactions within the date range
         const transactions = await db.Transaction.findAll({
             where: {
-                success: true,
                 createdAt: {
-                    [Op.between]: [new Date(start), new Date(`${end}T23:59:59`)] 
-                }
+                    [Op.between]: [new Date(`${startDate}T00:00:00`), new Date(`${endDate}T23:59:59`)],
+                },
             },
-            order: [['createdAt', 'ASC']] 
+            order: [['createdAt', 'ASC']], // Order by creation date in ascending order
         });
 
-        
-        if (transactions.length === 0) {
-            return res.status(404).json({
-                message: 'No transactions found for the given date range.',
-                success: false,
-                statusCode: 404
-            });
-        }
-
-        const encryptedDetails = encryptData(transactions, key)
-
-        
         return res.status(200).json({
             success: true,
+            transactions,
             statusCode: 200,
-            data: encryptedDetails
         });
     } catch (error) {
-        console.error(`Error retrieving transactions: ${error.message}`);
+        console.error('Error fetching transactions:', error);
         return res.status(500).json({
-            message: 'Internal Server Error',
             success: false,
-            statusCode: 500
+            message: 'Failed to fetch transactions.',
+            statusCode: 500,
         });
     }
 });
