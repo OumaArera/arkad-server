@@ -20,6 +20,7 @@ app.use(bodyParser.urlencoded({ limit: '10mb', extended: true }));
 app.use('/public', express.static(path.join(__dirname, 'public')));
 
 // Define routes
+app.use('/users/users', require('./authentication/getUsers'));
 app.use('/users/signup', require('./authentication/signup'));
 app.use('/users/login', require('./authentication/login'));
 app.use('/users/reset-password', require('./authentication/forgotPassword'));
