@@ -5,6 +5,14 @@ const nodemailer = require('nodemailer');
 const authenticateToken = require("../authentication/authenticateToken");
 require('dotenv').config();
 
+const facebookIcon = require('../src/facebook.png');
+const instagramIcon = require('../src/instagram.jpeg');
+const linkedinIcon = require('../src/linkedind.png');
+const tiktokIcon = require('../src/tiktok.png');
+const twitterIcon = require('../src/x.jpg');  
+const youtubeIcon = require('../src/youtube.png');
+const website = require('../src/website.png');
+
 const router = express.Router();
 
 const decryptData = (iv, ciphertext) => {
@@ -48,6 +56,30 @@ const sendNewsletterEmail = async (recipientEmail, title, content, sources) => {
         <p>${content}</p>
         ${formattedSources ? `<p><strong>Sources:</strong></p>${formattedSources}` : ''}
         <p>Best regards,<br/>Arkad Family</p>
+        <br />
+        <p style="text-align: center; margin-top: 20px;">
+          <a href="https://arkadsmp.co.ke" style="text-decoration: none;">
+            <img src="${website}" alt="Facebook" style="width: 24px; height: 24px; margin-right: 10px;"/>
+          </a>
+          <a href="https://facebook.com/arkadsic" style="text-decoration: none;">
+            <img src="${facebookIcon}" alt="Facebook" style="width: 24px; height: 24px; margin-right: 10px;"/>
+          </a>
+          <a href="https://tiktok.com/@Arkad_SMP" style="text-decoration: none;">
+            <img src="${tiktokIcon}" alt="TikTok" style="width: 24px; height: 24px; margin-right: 10px;"/>
+          </a>
+          <a href="https://x.com/ArkadSMP" style="text-decoration: none;">
+            <img src="${twitterIcon}" alt="Twitter" style="width: 24px; height: 24px; margin-right: 10px;"/>
+          </a>
+          <a href="https://linkedin.com/company/arkadsmp" style="text-decoration: none;">
+            <img src="${linkedinIcon}" alt="LinkedIn" style="width: 24px; height: 24px; margin-right: 10px;"/>
+          </a>
+          <a href="https://instagram.com/arkad_sic" style="text-decoration: none;">
+            <img src="${instagramIcon}" alt="Instagram" style="width: 24px; height: 24px; margin-right: 10px;"/>
+          </a>
+          <a href="https://youtube.com/@arkadfamilysic" style="text-decoration: none;">
+            <img src="${youtubeIcon}" alt="YouTube" style="width: 24px; height: 24px;"/>
+          </a>
+        </p>
     `,
     };
     return transporter.sendMail(mailOptions);

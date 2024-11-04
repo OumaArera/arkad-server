@@ -5,6 +5,16 @@ const CryptoJS = require('crypto-js');
 const nodemailer = require('nodemailer');
 require('dotenv').config();
 
+const facebookIcon = require('../src/facebook.png');
+const instagramIcon = require('../src/instagram.jpeg');
+const linkedinIcon = require('../src/linkedind.png');
+const tiktokIcon = require('../src/tiktok.png');
+const twitterIcon = require('../src/x.jpg');  
+const youtubeIcon = require('../src/youtube.png');
+const website = require('../src/website.png');
+
+
+
 const router = express.Router();
 
 const validateEmail = (email) => {
@@ -60,25 +70,25 @@ const sendEmail = async (firstName, lastName, username, password) => {
 
         <p style="text-align: center; margin-top: 20px;">
           <a href="https://arkadsmp.co.ke" style="text-decoration: none;">
-            <img src="https://path/to/website-icon.png" alt="Website" style="width: 24px; height: 24px; margin-right: 10px;"/>
+            <img src="${website}" alt="Facebook" style="width: 24px; height: 24px; margin-right: 10px;"/>
           </a>
           <a href="https://facebook.com/arkadsic" style="text-decoration: none;">
-            <img src="https://path/to/facebook-icon.png" alt="Facebook" style="width: 24px; height: 24px; margin-right: 10px;"/>
+            <img src="${facebookIcon}" alt="Facebook" style="width: 24px; height: 24px; margin-right: 10px;"/>
           </a>
           <a href="https://tiktok.com/@Arkad_SMP" style="text-decoration: none;">
-            <img src="https://path/to/tiktok-icon.png" alt="TikTok" style="width: 24px; height: 24px; margin-right: 10px;"/>
+            <img src="${tiktokIcon}" alt="TikTok" style="width: 24px; height: 24px; margin-right: 10px;"/>
           </a>
           <a href="https://x.com/ArkadSMP" style="text-decoration: none;">
-            <img src="https://path/to/twitter-icon.png" alt="Twitter" style="width: 24px; height: 24px; margin-right: 10px;"/>
+            <img src="${twitterIcon}" alt="Twitter" style="width: 24px; height: 24px; margin-right: 10px;"/>
           </a>
           <a href="https://linkedin.com/company/arkadsmp" style="text-decoration: none;">
-            <img src="https://path/to/linkedin-icon.png" alt="LinkedIn" style="width: 24px; height: 24px; margin-right: 10px;"/>
+            <img src="${linkedinIcon}" alt="LinkedIn" style="width: 24px; height: 24px; margin-right: 10px;"/>
           </a>
           <a href="https://instagram.com/arkad_sic" style="text-decoration: none;">
-            <img src="https://path/to/instagram-icon.png" alt="Instagram" style="width: 24px; height: 24px; margin-right: 10px;"/>
+            <img src="${instagramIcon}" alt="Instagram" style="width: 24px; height: 24px; margin-right: 10px;"/>
           </a>
           <a href="https://youtube.com/@arkadfamilysic" style="text-decoration: none;">
-            <img src="https://path/to/youtube-icon.png" alt="YouTube" style="width: 24px; height: 24px;"/>
+            <img src="${youtubeIcon}" alt="YouTube" style="width: 24px; height: 24px;"/>
           </a>
         </p>
       </div>
@@ -87,6 +97,7 @@ const sendEmail = async (firstName, lastName, username, password) => {
 
   return transporter.sendMail(mailOptions);
 };
+
 
 
 router.post('/', async (req, res) => {

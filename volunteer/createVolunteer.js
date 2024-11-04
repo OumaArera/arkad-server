@@ -1,8 +1,15 @@
 const express = require('express');
 const db = require('../models');
-const CryptoJS = require('crypto-js');
 const nodemailer = require('nodemailer');
 require('dotenv').config();
+
+const facebookIcon = require('../src/facebook.png');
+const instagramIcon = require('../src/instagram.jpeg');
+const linkedinIcon = require('../src/linkedind.png');
+const tiktokIcon = require('../src/tiktok.png');
+const twitterIcon = require('../src/x.jpg');  
+const youtubeIcon = require('../src/youtube.png');
+const website = require('../src/website.png');
 
 const router = express.Router();
 
@@ -35,14 +42,29 @@ const sendEmail = async (email, fullName, activity) => {
       <p>In the meantime, if you have any questions or would like to learn more about us, feel free to visit our website or connect with us on social media.</p>
       <p>We look forward to working with you!</p>
       <br />
-      <p>Best regards,<br/>The Arkad Family Team</p>
-      <p>| <a href="https://arkadsmp.co.ke">Visit our website</a> |</p>
-      <p>| <a href="https://facebook.com/arkadsic">Facebook</a> |</p>
-      <p>| <a href="https://tiktok.com/@Arkad_SMP">TikTok</a> |</p>
-      <p>| <a href="https://x.com/ArkadSMP">X(Twitter)</a> |</p>
-      <p>| <a href="https://linkedin.com/company/arkadsmp">LinkedIn</a> |</p>
-      <p>| <a href="https://instagram.com/arkad_sic">Instagram</a> |</p>
-      <p>| <a href="https://youtube.com/@arkadfamilysic">YouTube</a> |</p>
+      <p style="text-align: center; margin-top: 20px;">
+          <a href="https://arkadsmp.co.ke" style="text-decoration: none;">
+            <img src="${website}" alt="Facebook" style="width: 24px; height: 24px; margin-right: 10px;"/>
+          </a>
+          <a href="https://facebook.com/arkadsic" style="text-decoration: none;">
+            <img src="${facebookIcon}" alt="Facebook" style="width: 24px; height: 24px; margin-right: 10px;"/>
+          </a>
+          <a href="https://tiktok.com/@Arkad_SMP" style="text-decoration: none;">
+            <img src="${tiktokIcon}" alt="TikTok" style="width: 24px; height: 24px; margin-right: 10px;"/>
+          </a>
+          <a href="https://x.com/ArkadSMP" style="text-decoration: none;">
+            <img src="${twitterIcon}" alt="Twitter" style="width: 24px; height: 24px; margin-right: 10px;"/>
+          </a>
+          <a href="https://linkedin.com/company/arkadsmp" style="text-decoration: none;">
+            <img src="${linkedinIcon}" alt="LinkedIn" style="width: 24px; height: 24px; margin-right: 10px;"/>
+          </a>
+          <a href="https://instagram.com/arkad_sic" style="text-decoration: none;">
+            <img src="${instagramIcon}" alt="Instagram" style="width: 24px; height: 24px; margin-right: 10px;"/>
+          </a>
+          <a href="https://youtube.com/@arkadfamilysic" style="text-decoration: none;">
+            <img src="${youtubeIcon}" alt="YouTube" style="width: 24px; height: 24px;"/>
+          </a>
+        </p>
     `,
   };
 
