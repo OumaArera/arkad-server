@@ -45,25 +45,49 @@ const sendEmail = async (firstName, lastName, username, password) => {
     to: username,
     subject: 'Account Creation',
     html: `
-      <p>Dear ${firstName} ${lastName},</p>
-      <p>You have been created as a user in the Arkad Family admin platform. Your login credentials are:</p>
-      <p><strong>Username:</strong> ${username}</p>
-      <p><strong>Password:</strong> ${password}</p>
-      <p>Welcome to Arkad Family,</p>
-      <p>Best regards,<br/>Arkad Family</p>
+      <div style="font-family: Arial, sans-serif; color: #333;">
+        <p>Dear ${firstName} ${lastName},</p>
+        <p>Welcome to the Arkad Family admin platform! Your account has been created successfully. Please use the following credentials to log in:</p>
+        
+        <p><strong>Username:</strong> ${username}</p>
+        <p><strong>Password:</strong> ${password}</p>
 
-      <p>| <a href="https://arkadsmp.co.ke">Visit our website</a> |</p>
-      <p>| <a href="https://facebook.com/arkadsic">Facebook</a> |</p>
-      <p>| <a href="https://tiktok.com/@Arkad_SMP">TikTok</a> |</p>
-      <p>| <a href="https://x.com/ArkadSMP">X(Twitter)</a> |</p>
-      <p>| <a href="https://linkedin.com/company/arkadsmp">LinkedIn</a> |</p>
-      <p>| <a href="https://instagram.com/arkad_sic">Instagram</a> |</p>
-      <p>| <a href="https://youtube.com/@arkadfamilysic">YouTube</a> |</p>
+        <a href="https://arkad-admin.vercel.app/" style="display: inline-block; margin-top: 20px; padding: 10px 20px; background-color: #007bff; color: #fff; text-decoration: none; border-radius: 5px;">Access Admin Dashboard</a>
+
+        <p style="margin-top: 20px;">Best regards,<br/>The Arkad Family</p>
+
+        <hr style="border: none; border-top: 1px solid #ddd; margin-top: 30px;"/>
+
+        <p style="text-align: center; margin-top: 20px;">
+          <a href="https://arkadsmp.co.ke" style="text-decoration: none;">
+            <img src="https://path/to/website-icon.png" alt="Website" style="width: 24px; height: 24px; margin-right: 10px;"/>
+          </a>
+          <a href="https://facebook.com/arkadsic" style="text-decoration: none;">
+            <img src="https://path/to/facebook-icon.png" alt="Facebook" style="width: 24px; height: 24px; margin-right: 10px;"/>
+          </a>
+          <a href="https://tiktok.com/@Arkad_SMP" style="text-decoration: none;">
+            <img src="https://path/to/tiktok-icon.png" alt="TikTok" style="width: 24px; height: 24px; margin-right: 10px;"/>
+          </a>
+          <a href="https://x.com/ArkadSMP" style="text-decoration: none;">
+            <img src="https://path/to/twitter-icon.png" alt="Twitter" style="width: 24px; height: 24px; margin-right: 10px;"/>
+          </a>
+          <a href="https://linkedin.com/company/arkadsmp" style="text-decoration: none;">
+            <img src="https://path/to/linkedin-icon.png" alt="LinkedIn" style="width: 24px; height: 24px; margin-right: 10px;"/>
+          </a>
+          <a href="https://instagram.com/arkad_sic" style="text-decoration: none;">
+            <img src="https://path/to/instagram-icon.png" alt="Instagram" style="width: 24px; height: 24px; margin-right: 10px;"/>
+          </a>
+          <a href="https://youtube.com/@arkadfamilysic" style="text-decoration: none;">
+            <img src="https://path/to/youtube-icon.png" alt="YouTube" style="width: 24px; height: 24px;"/>
+          </a>
+        </p>
+      </div>
     `,
   };
 
   return transporter.sendMail(mailOptions);
 };
+
 
 router.post('/', async (req, res) => {
   const { iv, ciphertext } = req.body;
