@@ -9,7 +9,17 @@ const validatePhoneNumber = (phone) => {
     return phoneRegex.test(phone);
 };
 
-router.post('/', authenticateToken,  async (req, res) => {
+// Helper function to generate a unique transaction ID
+const generateTransactionId = () => {
+    // Prefix, timestamp, and a random alphanumeric string
+    const prefix = "TXN";
+    const timestamp = Date.now();  // Millisecond timestamp
+    const randomString = Math.random().toString(36).substring(2, 8).toUpperCase(); // 6-char random string
+
+    return `${prefix}-${timestamp}-${randomString}`;
+};
+
+router.post('/', authenticateToken, async (req, res) => {
     const { fullName, phoneNumber, amount, mpesaReceiptNumber } = req.body;
 
     // Validate input fields
@@ -65,10 +75,14 @@ router.post('/', authenticateToken,  async (req, res) => {
             });
         }
 
+        // Generate unique transaction ID
+        const transactionId = generateTransactionId();
+
         // Save the donation to the database
         await db.Transaction.create({
             fullName,
             phoneNumber,
+            transactionId,
             amount: parsedAmount,
             mpesaReceiptNumber,
         });
@@ -76,6 +90,7 @@ router.post('/', authenticateToken,  async (req, res) => {
         return res.status(200).json({
             message: 'Donation received successfully.',
             success: true,
+            transactionId: transactionId, // Return transaction ID to client for reference
             statusCode: 200,
         });
 
